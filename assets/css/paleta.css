@@ -1,0 +1,58 @@
+/* Paleta do app: a única fonte das cores. Neutros, o verde da marca, dois tons de apoio (coral e âmbar) e o vermelho de erro.
+   Verde: ações, refeições feitas, anel. Coral: fotos e ponta quente do anel. Âmbar: sequência e conquistas.
+   Telas e componentes usam só estas variáveis. O modo escuro troca apenas estes valores. */
+:root{
+ color-scheme:light;
+ /* Neutros */
+ --cor-canvas:#f3f4f3;        /* fundo da página */
+ --cor-fundo:#ffffff;         /* cartões, campos, superfícies */
+ --cor-suave:#f1f2f1;         /* blocos internos, trilhas, chips */
+ --cor-linha-suave:#eceeec;
+ --cor-borda:#e3e6e3;
+ --cor-titulo:#17191b;        /* títulos e números; também fundo invertido (botão escuro, aviso) */
+ --cor-texto:#42464b;
+ --cor-placeholder:#747b78;
+ --cor-branco:#ffffff;        /* texto sobre fundo colorido ou invertido */
+ /* Acento */
+ --cor-primaria:#008060;
+ --cor-primaria-escura:#006b50;
+ --cor-primaria-suave:#e6f2ec; /* fundo de destaque */
+ --cor-primaria-clara:#a9d4c2; /* borda e estado parcial */
+ /* Apoio (usar pouco: ícones e um ou outro destaque) */
+ --cor-coral:#d9775f;--cor-coral-suave:#fbebe6;
+ --cor-ambar:#b7800f;--cor-ambar-suave:#fdf2d8;
+ /* Estado */
+ --cor-erro:#c0392b;
+ --cor-erro-suave:#f9e7e5;
+ /* Menu flutuante */
+ --cor-nav:#181a19;--cor-nav-item:#2c2f2d;--cor-nav-texto:#eeeeee;
+ --cor-foco:#00806026;--cor-overlay:#00000055;--cor-botao-hover:#303438;
+ /* Nomes antigos, mantidos para não quebrar estilos existentes */
+ --cor-verde-suave:var(--cor-suave);--cor-ativo-suave:var(--cor-primaria-suave);--cor-verde-profundo:var(--cor-titulo);
+ --cor-areia:var(--cor-suave);--cor-pessego:var(--cor-suave);--cor-lavanda:var(--cor-suave);
+}
+:root[data-theme=escuro]{
+ color-scheme:dark;
+ --cor-canvas:#0f1211;
+ --cor-fundo:#181c1b;
+ --cor-suave:#222726;
+ --cor-linha-suave:#272c2b;
+ --cor-borda:#303634;
+ --cor-titulo:#f1f3f2;
+ --cor-texto:#c9cecb;
+ --cor-placeholder:#8e9692;
+ --cor-branco:#0f1211;
+ --cor-primaria:#35b886;
+ --cor-primaria-escura:#2a9e72;
+ --cor-primaria-suave:#18332a;
+ --cor-primaria-clara:#2f6450;
+ --cor-coral:#ef9682;--cor-coral-suave:#3a2622;
+ --cor-ambar:#e5b64f;--cor-ambar-suave:#372f1e;
+ --cor-erro:#f0806f;
+ --cor-erro-suave:#3a2220;
+ --cor-nav:#050606;--cor-nav-item:#1d2120;--cor-nav-texto:#e6e9e7;
+ --cor-foco:#35b88640;--cor-overlay:#000000aa;--cor-botao-hover:#d9dcda;
+}
+/* Ilustrações e sombras mais discretas no escuro */
+:root[data-theme=escuro] .meal-art img,:root[data-theme=escuro] .hero-art>img,:root[data-theme=escuro] .empty-art img{opacity:.9}
+:root[data-theme=escuro] .card,:root[data-theme=escuro] .stat{box-shadow:none}

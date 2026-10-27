@@ -1,0 +1,8 @@
+import {config} from '../assets/js/config.js';
+const base=config.url.replace(/\/$/,'');
+if(!/^https:\/\//.test(base)||!config.anonKey)throw Error('Configuração incompleta');
+const headers={apikey:config.anonKey};
+if(config.anonKey.split('.').length===3){const payload=JSON.parse(Buffer.from(config.anonKey.split('.')[1],'base64url'));if(payload.role!=='anon')throw Error('A chave configurada não é anon. Verificação interrompida.');headers.Authorization='Bearer '+config.anonKey;}
+const checks=[['auth','/auth/v1/settings'],...['perfis','clientes','convites','fichas','fichas_tecnicas','planos','refeicoes','grupos','opcoes','registros_refeicao','fotos_refeicao','fugas','medidas','arquivos','comentarios','alimentos','modelos','configuracoes','comunidade_perfis','seguidores','posts','curtidas','comentarios_post'].map(t=>[t,`/rest/v1/${t}?select=*&limit=1`]),['buckets','/storage/v1/bucket']];
+for(const [name,path] of checks){try{const res=await fetch(base+path,{headers,signal:AbortSignal.timeout(12000)});const data=await res.json();console.log(JSON.stringify({check:name,status:res.status,...(Array.isArray(data)?{visibleRows:data.length}:name==='auth'&&res.ok?{emailEnabled:data.external?.email,signupDisabled:data.disable_signup}: {code:data.code||data.error_code,message:data.message||data.msg||data.error})}));}catch(err){console.log(JSON.stringify({check:name,error:err.cause?.code||err.name}));if(name==='auth')process.exit(2);}}
+for(const name of ['e_admin','minha_comunidade','feed','ranking_semanal']){const res=await fetch(base+'/rest/v1/rpc/'+name,{headers,signal:AbortSignal.timeout(12000)});const data=await res.json();console.log(JSON.stringify({check:'rpc:'+name,status:res.status,code:data?.code,message:data?.message}));}

@@ -1,0 +1,80 @@
+/* Camada visual: ilustrações locais, ícones e movimento discreto. */
+:root{--sombra-card:0 5px 24px #234e3c06;--sombra-hover:0 12px 32px #234e3c0d}
+body{background:var(--cor-canvas)}
+.ui-icon{width:21px;height:21px;flex-shrink:0;vertical-align:middle}
+.sidebar{border-color:var(--cor-linha-suave)}
+.sidebar nav a{align-items:center;transition:background .2s,transform .2s}
+.sidebar nav a:hover{background:var(--cor-suave);transform:translateX(3px)}
+.sidebar nav a.active{box-shadow:inset 3px 0 var(--cor-primaria)}
+.topbar{border-color:var(--cor-linha-suave)}
+.eyebrow{display:flex;align-items:center;gap:8px}
+.eyebrow .ui-icon{width:15px;height:15px}
+.page-heading{position:relative;isolation:isolate}
+.illustrated-heading{background:var(--cor-verde-suave);border:1px solid var(--cor-linha-suave);border-radius:20px;min-height:210px;padding:30px;overflow:hidden;gap:12px}
+.heading-copy{position:relative;z-index:1;max-width:570px}
+.illustrated-heading .heading-copy{flex:1;min-width:0}
+.illustrated-heading h1{color:var(--cor-verde-profundo)}
+.illustrated-heading>.button{position:relative;z-index:1;flex-shrink:0}
+.hero-art{width:245px;height:180px;position:relative;flex-shrink:0;pointer-events:none}
+.hero-art>img{position:relative;width:100%;height:100%;object-fit:contain;z-index:1;animation:art-arrive .7s ease-out both}
+.hero-orbit{position:absolute;border:1px dashed var(--cor-primaria);border-radius:50%;opacity:.12;inset:10px 15px;transform:rotate(-20deg)}
+.orbit-two{inset:24px 0;transform:rotate(20deg)}
+.floating-leaf{position:absolute;right:7px;top:17px;z-index:2;color:var(--cor-primaria);background:var(--cor-fundo);padding:11px;border-radius:14px;box-shadow:var(--sombra-card);transform:rotate(10deg);animation:leaf-float 5s ease-in-out 2}
+.card,.stat{border-color:var(--cor-linha-suave);box-shadow:var(--sombra-card)}
+.stat{position:relative;padding-right:55px;overflow:hidden}
+.stat-icon{display:grid;place-items:center;position:absolute;right:16px;top:20px;width:36px;height:36px;border-radius:12px;background:var(--cor-verde-suave);color:var(--cor-primaria)}
+.stat:nth-child(2) .stat-icon{background:var(--cor-areia)}
+.stat:nth-child(3) .stat-icon{background:var(--cor-pessego)}
+.stat.featured .stat-icon{background:var(--cor-fundo)}
+.stat strong{color:var(--cor-verde-profundo)}
+.icon-heading,.guidance-card h2{display:flex;align-items:center;gap:9px}
+.icon-heading .ui-icon,.guidance-card .ui-icon{color:var(--cor-primaria)}
+.avatar{border-radius:14px;border:3px solid var(--cor-fundo);outline:1px solid var(--cor-linha-suave)}
+tr:nth-child(3n+2) .avatar{background:var(--cor-areia)}
+tr:nth-child(3n+3) .avatar{background:var(--cor-lavanda)}
+.meal{padding:24px 26px;position:relative;animation:card-arrive .4s ease-out both;transition:border-color .2s,box-shadow .2s}
+.meal:nth-of-type(2){animation-delay:.06s}.meal:nth-of-type(3){animation-delay:.12s}.meal:nth-of-type(4){animation-delay:.18s}
+.meal:hover{border-color:var(--cor-foco);box-shadow:var(--sombra-hover)}
+.meal-heading{display:flex;align-items:center;gap:17px;min-width:0}
+.meal-art{display:block;width:76px;height:76px;flex-shrink:0;transition:transform .25s}
+.meal-art img{width:100%;height:100%;display:block}
+.meal:hover .meal-art{transform:rotate(-4deg)}
+.meal time{display:flex;align-items:center;gap:5px;font-size:12px;letter-spacing:.6px;margin-bottom:6px}
+.meal time .ui-icon{width:14px;height:14px}
+.meal h2{margin:0;font-size:20px}
+.meal .group{border-color:var(--cor-linha-suave);margin-top:20px;padding-top:16px}
+.group label{border-radius:8px;padding:9px 10px;margin:3px -10px;transition:background .18s}
+.group label:has(input){cursor:pointer}
+.group label:has(input):hover,.group label:has(input:checked){background:var(--cor-verde-suave)}
+input[type=radio],input[type=checkbox]{accent-color:var(--cor-primaria);width:17px;height:17px;flex-shrink:0}
+.client-nav{border-color:var(--cor-linha-suave);box-shadow:0 -4px 24px #234e3c06;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.client-nav a{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:75px;transition:background .2s,color .2s}
+.client-nav a .ui-icon{width:22px;height:22px;transition:transform .2s}
+.client-nav a:hover .ui-icon{transform:translateY(-2px)}
+.client-nav a.active{border-radius:12px}
+.client-shell{padding-bottom:130px}
+.button{transition:background .18s,box-shadow .18s,transform .18s}
+.button:active{transform:scale(.98)}
+.button:not(.ghost):hover{box-shadow:var(--sombra-card)}
+.tabs button{display:inline-flex;align-items:center;gap:8px}
+.tabs .ui-icon{width:18px;height:18px}
+.empty{display:flex;align-items:center;flex-direction:column;gap:16px}
+.empty p{margin:0;max-width:350px}
+.empty-art{display:grid;place-items:center;width:72px;height:72px;border-radius:24px 24px 24px 6px;background:var(--cor-verde-suave);color:var(--cor-primaria);transform:rotate(-7deg)}
+.empty-art .ui-icon{width:33px;height:33px;transform:rotate(7deg)}
+.guidance-card{background:var(--cor-areia);border-color:transparent}
+.timeline article{position:relative;padding-left:53px}
+.timeline-icon{position:absolute;left:15px;top:19px;color:var(--cor-primaria)}
+.auth{position:relative;margin-top:30px}
+.auth .brand{margin-bottom:12px}
+.auth-art{display:flex;justify-content:center;margin:0 0 15px}
+.auth-art .hero-art{width:220px;height:160px}
+.toast{animation:card-arrive .2s ease-out}
+@keyframes card-arrive{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes art-arrive{from{opacity:0;transform:translateY(8px) rotate(-4deg)}to{opacity:1;transform:translateY(0) rotate(0)}}
+@keyframes leaf-float{0%,100%{transform:translateY(0) rotate(10deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+@media(min-width:1101px){.workspace .illustrated-heading .hero-art{width:210px}.workspace .illustrated-heading>.button{align-self:flex-end}.workspace .illustrated-heading h1{font-size:30px}}
+@media(max-width:1100px){.workspace .illustrated-heading{flex-wrap:wrap}.workspace .illustrated-heading .hero-art{width:155px;height:135px}.workspace .illustrated-heading>.button{align-self:flex-start}.stat{padding-right:18px;padding-top:62px}.stat-icon{top:15px;left:15px;right:auto}}
+@media(max-width:700px){.illustrated-heading{padding:22px;min-height:190px;display:block}.illustrated-heading .heading-copy{max-width:75%}.illustrated-heading h1{font-size:26px}.illustrated-heading p{font-size:13px}.illustrated-heading .eyebrow{font-size:13px}.illustrated-heading .hero-art,.workspace .illustrated-heading .hero-art{position:absolute;width:130px;height:120px;right:-22px;bottom:7px;opacity:.8}.illustrated-heading>.button{margin-top:18px}.hero-art .floating-leaf{display:none}.stat{padding:54px 12px 16px}.stat-icon{width:29px;height:29px;border-radius:9px;left:12px}.stat-icon .ui-icon{width:18px;height:18px}.meal{padding:18px}.meal-heading{gap:12px}.meal-art{width:59px;height:59px}.meal h2{font-size:18px}.meal header{gap:8px;flex-wrap:wrap}.meal .badge{margin-left:71px;margin-top:-8px}.client-nav{justify-content:space-around;padding-left:6px;padding-right:6px}.client-nav a{min-width:0;flex:1;padding:7px 5px;font-size:11px}.client-shell{padding:22px 16px 125px}.tabs{gap:12px}.tabs button{font-size:13px;gap:5px}.tabs .ui-icon{width:16px;height:16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.meal:hover .meal-art,.sidebar nav a:hover,.client-nav a:hover .ui-icon{transform:none}}
+@media print{body{background:var(--cor-fundo)}.hero-art,.meal-art,.stat-icon,.auth-art,.empty-art,.timeline-icon{display:none!important}.illustrated-heading{background:none;border:0;padding:0;min-height:0}.illustrated-heading .heading-copy{max-width:none}.card,.stat{box-shadow:none}.meal{animation:none}.meal .badge{margin:0}.meal .group label{padding:2px 0}.guidance-card{background:none}}
