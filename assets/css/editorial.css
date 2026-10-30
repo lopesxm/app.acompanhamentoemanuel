@@ -74,3 +74,5 @@ input[type=checkbox],input[type=radio]{accent-color:var(--cor-primaria)}
 @media(max-width:600px){.auth{margin:24px 16px;padding:26px 22px}.sidebar nav a{min-height:52px}.context-rail{display:none}}
 @media(max-width:600px){h1,.patient-identity-copy h1{font-size:30px}.auth h1{font-size:30px}.page-heading{margin-bottom:22px}.card,.stat{border-radius:18px}.patient-identity-copy h1{font-size:24px}.patient-section-heading h2{font-size:17px}}
 @media print{body{background:white!important;color:#151614!important}.card{background:white!important;color:#151614!important}:root,:root[data-theme=escuro]{--cor-titulo:#151614;--cor-texto:#343A30;--cor-fundo:#fff;--cor-canvas:#fff;--cor-placeholder:#62645C;--cor-borda:#D0CEC4;--cor-primaria:#343A30}}
+
+.account-profile{display:flex;align-items:center;gap:10px;min-width:0;flex:1;color:var(--cor-titulo);text-decoration:none;border-radius:8px}.account-profile>span:last-child{min-width:0}.account-profile:hover strong{text-decoration:underline}.account-profile:focus-visible{outline:2px solid var(--cor-primaria);outline-offset:4px}

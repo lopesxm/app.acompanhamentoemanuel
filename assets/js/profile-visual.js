@@ -59,6 +59,7 @@ async function edit(data,done){
  }catch(err){await Promise.allSettled(created.map(deleteFile));throw err;}
  const old=['avatar','capa'].map(k=>data[k]).filter(path=>path&&!Object.values(paths).includes(path));
  const cleanup=await Promise.allSettled([...new Set(old)].map(deleteFile));
+ document.dispatchEvent(new Event('profile-updated'));
  d.close();toast(cleanup.some(x=>x.status==='rejected')?'Perfil salvo. Uma imagem antiga não pôde ser removida do armazenamento.':'Perfil atualizado.');await done();
  });
 }
