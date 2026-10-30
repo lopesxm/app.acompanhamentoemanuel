@@ -1,4 +1,5 @@
 import {today} from './domain.js';
+import {seedNotifications} from './demo-notificacoes.js';
 const id=()=>crypto.randomUUID();
 const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d.toLocaleDateString('en-CA');};
 export const DEMO_KEY='emanuel-demo-v1';
@@ -19,5 +20,6 @@ export function seed(){
 export function demoDB(){let db;try{db=JSON.parse(localStorage.getItem(DEMO_KEY));}catch{}if(!db){db=seed();localStorage.setItem(DEMO_KEY,JSON.stringify(db));}
  // Demonstrações salvas antes das calorias recebem os valores de exemplo uma vez.
  if(!db.kcalDemo){for(const p of db.planos||[])for(const m of p.refeicoes||[])for(const g of m.grupos||[])for(const o of g.opcoes||[])if(o.kcal==null&&DEMO_KCAL[o.descricao]!=null)o.kcal=DEMO_KCAL[o.descricao];for(const a of db.alimentos||[])if(a.kcal==null&&DEMO_KCAL[a.nome]!=null)a.kcal=DEMO_KCAL[a.nome];db.kcalDemo=true;localStorage.setItem(DEMO_KEY,JSON.stringify(db));}
+ if(!db.notificacoesDemo){seedNotifications(db);localStorage.setItem(DEMO_KEY,JSON.stringify(db));}
  return db;}
 export function demoSave(db){localStorage.setItem(DEMO_KEY,JSON.stringify(db));}

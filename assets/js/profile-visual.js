@@ -5,6 +5,17 @@ import {$,field,on,modal,toast} from './ui.js';
 export async function readVisual(args={}) {
  return rpc('visual_perfil',args);
 }
+export async function patientIdentity(root,client,status,facts=''){
+ if(!root)return;
+ const render=data=>{
+ const name=data?.nome||client.nome;
+ const initials=client.nome.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('');
+ root.classList.add('patient-identity');
+ root.innerHTML=`<div class="patient-identity-avatar"><span aria-hidden="true">${e(initials)}</span>${data?.avatar?picture(data.avatar,'patient-avatar-photo','Foto de perfil de '+e(name)):''}</div><div class="patient-identity-copy"><span class="patient-identity-label">Perfil do paciente</span><h1>${e(name)}</h1>${name!==client.nome?`<small class="patient-registered-name">${e(client.nome)}</small>`:''}${data?.bio?`<p class="patient-identity-bio">${e(data.bio)}</p>`:''}<span class="patient-identity-status">${e(status||'Paciente')}</span>${facts}</div>`;
+ };
+ render(null);
+ try{const data=await readVisual({cid:client.id});if(data){render(data);await photos(root);const img=root.querySelector('img');if(img)img.addEventListener('error',()=>img.remove(),{once:true});}}catch{/* Keep the registered identity when a visual profile is unavailable. */}
+}
 function picture(path,cls,alt){return path?`<img class="${cls}" data-visual-photo="${e(path)}" alt="${alt}">`:'';}
 async function photos(root){await Promise.all([...root.querySelectorAll('[data-visual-photo]')].map(async img=>{try{img.src=await signedUrl(img.dataset.visualPhoto);}catch{img.remove();}}));}
 export async function visualCard(root,args={},editable=false){

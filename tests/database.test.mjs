@@ -15,6 +15,7 @@ test('Migração, convites, publicação e isolamento de dados sob RLS',async t=
  const sql=(await readFile(new URL('../supabase/migrations/001_initial.sql',import.meta.url),'utf8')).replace('create extension if not exists pgcrypto;','-- gen_random_uuid já existe no Postgres embarcado');
  await db.exec(sql);
  await db.exec(await readFile(new URL('../supabase/migrations/002_mensagens_casuais.sql',import.meta.url),'utf8'));
+ await db.exec(await readFile(new URL('../supabase/migrations/006_escolhas_alimentares.sql',import.meta.url),'utf8'));
  const admin='00000000-0000-4000-8000-000000000001',u1='00000000-0000-4000-8000-000000000002',u2='00000000-0000-4000-8000-000000000003';
  await db.query(`insert into auth.users values($1,'admin@exemplo.test'),($2,'a@exemplo.test'),($3,'b@exemplo.test')`,[admin,u1,u2]);
  await db.query(`insert into perfis(id,papel,nome) values($1,'admin','Emanuel')`,[admin]);
@@ -38,7 +39,7 @@ test('Migração, convites, publicação e isolamento de dados sob RLS',async t=
  await assert.rejects(()=>db.query(`insert into medidas(cliente_id,peso) values($1,70)`,[cid2]),/row-level security/);
  });
  const payload={inicio_em:'2020-01-01',observacoes_gerais:'Teste',refeicoes:[{nome:'Almoço',horario:'12:00',grupos:[{nome:'Proteína',regra:'escolher_1',opcoes:[{descricao:'Alimento A',quantidade:100,unidade:'g'},{descricao:'Alimento B',quantidade:100,unidade:'g'}]}]}]};
- let pid,mid,oid;
+ let pid,mid,oid,gid;
  await t.test('rascunho invisível e publicação versionada, sem escrita direta do cliente',async()=>{
  await as(admin);pid=await scalar('select salvar_plano($1,$2,null)',[cid1,payload]);
  await as(u1);assert.equal((await db.query('select * from planos')).rows.length,0);assert.equal((await db.query('select * from refeicoes')).rows.length,0);
@@ -48,6 +49,21 @@ test('Migração, convites, publicação e isolamento de dados sob RLS',async t=
  await as(u1);assert.equal((await db.query('select * from planos')).rows.length,1);mid=await scalar('select id from refeicoes');oid=await scalar('select id from opcoes limit 1');
  assert.equal((await db.query(`update planos set observacoes_gerais='alterado' where id=$1 returning id`,[pid])).rows.length,0);
  await as(u2);assert.equal((await db.query('select * from planos')).rows.length,0);
+ });
+ await t.test('alternativas persistem sem consumo e respeitam paciente e grupo',async()=>{
+ await as(u1);gid=await scalar('select id from grupos limit 1');
+ const options=(await db.query('select id from opcoes where grupo_id=$1',[gid])).rows;
+ await db.query('select escolher_alimento($1,$2)',[gid,options[1].id]);
+ assert.equal(await scalar('select count(*)::int from registros_refeicao'),0);
+ await as(u2);assert.equal(await scalar('select count(*)::int from escolhas_alimentares'),0);
+ await assert.rejects(()=>db.query('select escolher_alimento($1,$2)',[gid,oid]),/disponível/);
+ await as(u1);assert.equal(await scalar('select opcao_id from escolhas_alimentares'),options[1].id);
+ await assert.rejects(()=>db.query('select escolher_alimento($1,gen_random_uuid())',[gid]),/autorizada/);
+ await assert.rejects(()=>db.query('delete from escolhas_alimentares'),/permission denied/);
+ await db.query('select escolher_alimento($1,$2)',[gid,oid]);
+ assert.equal(await scalar('select count(*)::int from escolhas_alimentares'),1);
+ assert.equal(await scalar('select opcao_id from escolhas_alimentares'),oid);
+ await as(admin);assert.equal(await scalar('select count(*)::int from escolhas_alimentares'),1);
  });
  await t.test('checks validam refeição e opções; arquivos respeitam caminho e cliente',async()=>{
  await as(u1);
@@ -64,6 +80,8 @@ test('Migração, convites, publicação e isolamento de dados sob RLS',async t=
  assert.equal(await scalar(`select count(*)::int from planos where cliente_id=$1 and status='publicado'`,[cid1]),1);
  assert.equal(await scalar('select versao from planos where id=$1',[pid2]),2);
  await as(u1);assert.equal((await db.query('select * from planos')).rows.length,1);assert.equal((await db.query('select * from registros_refeicao')).rows.length,1);
+ await assert.rejects(()=>db.query('select escolher_alimento($1,$2)',[gid,oid]),/disponível/);
+ assert.equal(await scalar('select opcao_id from escolhas_alimentares'),oid);
  });
  }finally{await db.close();}
 });

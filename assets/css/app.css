@@ -9,3 +9,7 @@
 
 @import url('./destaques.css');
 @import url('./paleta.css');
+
+@import url('./substitutions.css');
+@import url('./patient-workspace.css');
+@import url('./notificacoes.css');

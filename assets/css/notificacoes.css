@@ -1,0 +1,43 @@
+/* Sininho, painel de notificações, fatos do perfil do paciente e grupo do WhatsApp. */
+.notif-toggle{position:relative;width:44px;height:44px;border-radius:50%!important;padding:0!important;display:inline-grid;place-items:center;border:1px solid var(--cor-borda)!important;background:var(--cor-fundo)!important;color:var(--cor-titulo)!important}
+.notif-toggle .ui-icon{width:20px;height:20px}
+.account .notif-toggle{width:36px;height:36px;border:0!important;background:transparent!important}
+.notif-count{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--cor-coral);color:#fff;font-size:11px;font-weight:700;line-height:19px;text-align:center;box-shadow:0 0 0 2px var(--cor-fundo)}
+.notif-count[hidden]{display:none}
+.notif-dialog{width:min(460px,calc(100vw - 32px))}
+.notif-list{display:grid;gap:4px;max-height:min(70vh,560px);overflow-y:auto;margin:0 -8px;padding:0 8px}
+.notif-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:14px;color:inherit;text-decoration:none}
+.notif-item:hover,.notif-item:focus-visible{background:var(--cor-suave)}
+.notif-item.is-new{background:var(--cor-primaria-suave)}
+.notif-icon{display:grid;place-items:center;flex-shrink:0;width:38px;height:38px;border-radius:12px;background:var(--cor-suave);color:var(--cor-titulo)}
+.notif-item.is-new .notif-icon{background:var(--cor-fundo);color:var(--cor-primaria)}
+.notif-icon .ui-icon{width:19px;height:19px}
+.notif-copy{display:grid;gap:3px;min-width:0}
+.notif-copy strong{font-size:14px;line-height:1.35;color:var(--cor-titulo)}
+.notif-copy span{font-size:13px;line-height:1.5;color:var(--cor-texto);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.notif-copy small{font-size:11px;color:var(--cor-placeholder)}
+.notif-empty{display:grid;justify-items:center;gap:10px;padding:28px 8px;text-align:center;color:var(--cor-texto)}
+.notif-empty .ui-icon{width:32px;height:32px;color:var(--cor-placeholder)}
+.notif-empty p{margin:0;font-size:14px;line-height:1.6;max-width:300px}
+
+/* Perfil do paciente: fatos rápidos embaixo do nome. */
+.patient-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.patient-fact{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;background:var(--cor-suave);font-size:12px;color:var(--cor-texto);line-height:1.3}
+.patient-fact strong{color:var(--cor-titulo);font-weight:600}
+.patient-fact .ui-icon{width:15px;height:15px}
+a.patient-fact{text-decoration:none;color:var(--cor-primaria)}
+a.patient-fact:hover{background:var(--cor-primaria-suave)}
+
+/* Grupo do WhatsApp na comunidade. */
+.whatsapp-card{display:grid;gap:14px}
+.whatsapp-card .whatsapp-head{display:flex;align-items:center;gap:14px}
+.whatsapp-card .whatsapp-icon{display:grid;place-items:center;width:48px;height:48px;flex-shrink:0;border-radius:14px;background:var(--cor-primaria-suave);color:var(--cor-primaria)}
+.whatsapp-card .whatsapp-icon .ui-icon{width:24px;height:24px}
+.whatsapp-card h2{margin:0}
+.whatsapp-card p{margin:0}
+
+/* Post aberto a partir de uma notificação. */
+.post-highlight{outline:2px solid var(--cor-primaria);outline-offset:4px}
+
+/* Resposta do cliente no diário. */
+.diary-reply{border-left:3px solid var(--cor-primaria)}

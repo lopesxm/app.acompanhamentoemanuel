@@ -47,13 +47,36 @@ async function renderPosts(root,args,admin,emptyText,count=PAGE){
 // Cliente
 export async function communityPage(root,c,p){
  const state=await rpc('minha_comunidade');
- if(!state.perfil?.ativo)return activation(root,c,state.perfil,()=>communityPage(root,c,p));
- const tabs=[['feed','Feed'],['ranking','Ranking'],['amigos',`Amigos${state.pedidos.length?` (${state.pedidos.length})`:''}`]];
+ if(!state.perfil?.ativo){await activation(root,c,state.perfil,()=>communityPage(root,c,p));const group=document.createElement('div');group.style.marginTop='24px';root.append(group);await groupTab(group);return;}
+ const tabs=[['feed','Feed'],['ranking','Ranking'],['amigos',`Amigos${state.pedidos.length?` (${state.pedidos.length})`:''}`],['grupo','Grupo do WhatsApp']];
+ const target=location.hash.startsWith('#post-')?location.hash.slice(6):null;
  const current=tabs.some(([k])=>k===location.hash.slice(1))?location.hash.slice(1):'feed';
  root.innerHTML=`<div class="row" style="justify-content:space-between"><div class="tabs" role="tablist" style="margin:0">${tabs.map(([k,t])=>`<button role="tab" data-tab="${k}" class="${k===current?'active':''}" aria-selected="${k===current}">${t}</button>`).join('')}</div><a class="button secondary" href="/app/perfil.html">Meu perfil</a></div><div id="community-tab" style="margin-top:24px"></div>`;
- const show=async k=>{history.replaceState(null,'','#'+k);$$('[data-tab]',root).forEach(el=>{el.classList.toggle('active',el.dataset.tab===k);el.setAttribute('aria-selected',String(el.dataset.tab===k));});const pane=$('#community-tab',root);if(k==='feed')await feedTab(pane,c,state,()=>communityPage(root,c,p));if(k==='ranking')await rankingTab(pane);if(k==='amigos')await friendsTab(pane,state,()=>communityPage(root,c,p));};
+ const show=async k=>{history.replaceState(null,'','#'+k);$$('[data-tab]',root).forEach(el=>{el.classList.toggle('active',el.dataset.tab===k);el.setAttribute('aria-selected',String(el.dataset.tab===k));});const pane=$('#community-tab',root);if(k==='feed')await feedTab(pane,c,state,()=>communityPage(root,c,p));if(k==='ranking')await rankingTab(pane);if(k==='amigos')await friendsTab(pane,state,()=>communityPage(root,c,p));if(k==='grupo')await groupTab(pane);};
  $$('[data-tab]',root).forEach(el=>on(el,'click',()=>show(el.dataset.tab)));
  await show(current);
+ focusPost(root,target);
+}
+// Veio de uma notificação: rola até o post e destaca.
+function focusPost(root,id){
+ if(!id)return;const el=$$('[data-post]',root).find(x=>x.dataset.post===id);
+ if(el){el.scrollIntoView({block:'center'});el.classList.add('post-highlight');}
+}
+async function groupTab(pane){
+ let link=null;try{link=await rpc('grupo_whatsapp');}catch{/* Banco sem a atualização 007: mostra o aviso padrão. */}
+ pane.innerHTML=`<section class="card whatsapp-card"><div class="whatsapp-head"><span class="whatsapp-icon">${icon('whatsapp')}</span><div><h2>Grupo do WhatsApp</h2><p class="muted">O papo com o Emanuel e a comunidade, direto no seu WhatsApp.</p></div></div>${link?`<a class="button" href="${e(link)}" target="_blank" rel="noopener">Entrar no grupo ↗</a><small class="muted">Abre o WhatsApp. Lá dentro valem as mesmas regras de respeito da comunidade.</small>`:'<div class="notice">O Emanuel ainda não colocou o link do grupo. Assim que ele colocar, aparece aqui.</div>'}</section>`;
+}
+const WHATSAPP_GROUP=/^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]{10,40}$/;
+async function groupSettings(root,p){
+ const cfg=(await list('configuracoes'))[0];
+ root.innerHTML=`<section class="card whatsapp-card"><div class="whatsapp-head"><span class="whatsapp-icon">${icon('whatsapp')}</span><div><h2>Grupo do WhatsApp</h2><p class="muted">Cola aqui o link de convite do grupo. Os clientes veem um botão pra entrar na aba "Grupo do WhatsApp" da comunidade.</p></div></div><form id="group-form">${field('grupo_whatsapp','Link do grupo',cfg?.grupo_whatsapp||'','url')}<p class="muted" style="margin-top:-8px">No WhatsApp: abre o grupo → nome do grupo → Convidar via link → Copiar link. Deixa vazio pra tirar o botão.</p><div class="row"><button class="button" type="submit">Salvar link</button>${cfg?.grupo_whatsapp?`<a class="button ghost" href="${e(cfg.grupo_whatsapp)}" target="_blank" rel="noopener">Testar link ↗</a>`:''}</div></form></section>`;
+ $('[name=grupo_whatsapp]',root).placeholder='https://chat.whatsapp.com/…';
+ on($('#group-form',root),'submit',async()=>{
+  let link=String(new FormData($('#group-form',root)).get('grupo_whatsapp')||'').trim().split(/[?#]/)[0].replace(/\/$/,'');
+  if(link&&!WHATSAPP_GROUP.test(link))throw Error('Esse link não parece de grupo do WhatsApp. Ele começa com https://chat.whatsapp.com/');
+  await save('configuracoes',{nutricionista_id:p.id,...(cfg?{}:{sem_registro_dias:3,adesao_minima:60}),grupo_whatsapp:link||null},'nutricionista_id');
+  toast(link?'Link do grupo salvo ✓':'Botão do grupo removido.');await groupSettings(root,p);
+ });
 }
 function activation(root,c,previous,done){
  const first=c.nome.split(' ')[0];const suggestion=(previous?.usuario||first.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9_.]/g,'')).slice(0,20);
@@ -145,8 +168,11 @@ export async function adminClientCommunity(pane,c){
  await renderPosts($('#client-posts',pane),{p_cliente:c.id},true,'Esse cliente ainda não postou nada.');
 }
 export async function adminCommunity(root,p){
- root.innerHTML=`<div id=visual-profile></div><section class="card composer"><h2>Postar pra comunidade</h2><p class="muted">Seus posts aparecem pra todo cliente que ativou a comunidade. Os posts dos clientes entram direto, e você pode esconder o que não estiver legal.</p><form id="tip">${field('texto','Dica, desafio ou recado','','textarea')}<div class="field"><label for="tip-photo">Foto (opcional)</label><input id="tip-photo" name="file" type="file" accept="image/jpeg,image/png,image/webp"></div><button class="button" type="submit">Postar</button></form></section><div id="posts" style="margin-top:24px"></div>`;
+ const target=location.hash.startsWith('#post-')?location.hash.slice(6):null;
+ root.innerHTML=`<div id=visual-profile></div><div id="group-settings" style="margin-bottom:24px"></div><section class="card composer"><h2>Postar pra comunidade</h2><p class="muted">Seus posts aparecem pra todo cliente que ativou a comunidade. Os posts dos clientes entram direto, e você pode esconder o que não estiver legal.</p><form id="tip">${field('texto','Dica, desafio ou recado','','textarea')}<div class="field"><label for="tip-photo">Foto (opcional)</label><input id="tip-photo" name="file" type="file" accept="image/jpeg,image/png,image/webp"></div><button class="button" type="submit">Postar</button></form></section><div id="posts" style="margin-top:24px"></div>`;
  on($('#tip',root),'submit',async()=>{const f=new FormData($('#tip',root));const file=f.get('file');if(file?.size)validateImage(file);let path=null;if(file&&file.size)path=await upload(`comunidade/${p.id}`,file);try{await rpc('postar_dica',{p_texto:f.get('texto'),foto:path});}catch(err){if(path)await deleteFile(path);throw err;}toast('Post no ar! 🚀');await adminCommunity(root,p);});
  await visualCard($('#visual-profile',root),{},true);
+ await groupSettings($('#group-settings',root),p);
  await renderPosts($('#posts',root),{},true,'Ninguém postou ainda. Que tal começar com uma dica?');
+ focusPost(root,target);
 }

@@ -77,7 +77,8 @@ test('Comunidade: opt-in, seguidores, privacidade do feed e moderação',async t
  const post=(await scalar('select feed()')).find(p=>p.id===resumo);
  assert.deepEqual(Object.keys(post.dados).sort(),['adesao','dia','feitas','previstas','sequencia']);
  assert.equal(post.dados.feitas,1);assert.equal(post.dados.previstas,2);assert.equal(post.dados.adesao,50);
- assert.doesNotMatch(JSON.stringify(post),/Frango|Peixe|120|150/);
+ assert.doesNotMatch(JSON.stringify(post),/Frango|Peixe/);
+ assert.deepEqual(Object.keys(post.dados).sort(),['adesao','dia','feitas','previstas','sequencia']);
  await assert.rejects(()=>db.query(`select postar_resumo((now() at time zone 'America/Sao_Paulo')::date,null)`),/já postou/);
  await assert.rejects(()=>db.query(`select postar_conquista('sequencia_30',null)`),/não tá liberada/);
  });

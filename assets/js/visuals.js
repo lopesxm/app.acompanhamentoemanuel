@@ -18,7 +18,9 @@ const paths={
  scale:'<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M7 8a7 7 0 0 1 10 0l-2 4H9Zm5-2v3"/>',
  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>',
  tick:'<path d="m5 12.5 4.5 4.5L19 7"/>',
- folder:'<path d="M3 7V4h6l2 3h10v13H3Z"/>'
+ folder:'<path d="M3 7V4h6l2 3h10v13H3Z"/>',
+ bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+ whatsapp:'<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7Z"/><path d="M9.5 9c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-1.5-1-2-2l1-1-1-2Z"/>'
 };
 export const icon=(name,cls='')=>`<svg class="ui-icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name]||paths.leaf}</svg>`;
 export function mealVisual(name,time){const n=name.toLowerCase();const kind=/café|cafe|desjejum/.test(n)?'breakfast':/lanche|pré|pós/.test(n)?'snack':/jantar|ceia/.test(n)||Number(time?.slice(0,2))>=18?'dinner':'lunch';return `<span class="meal-art ${kind}" aria-hidden="true"><img src="/assets/img/${kind}.svg" alt="" width="80" height="80" loading="lazy"></span>`;}
