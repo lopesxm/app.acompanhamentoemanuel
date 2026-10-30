@@ -5,6 +5,21 @@ import {$,field,on,modal,toast} from './ui.js';
 export async function readVisual(args={}) {
  return rpc('visual_perfil',args);
 }
+// Keep initials visible until the private profile photo has loaded successfully.
+export async function clientAvatars(root,cache=new Map()){
+ if(!root)return;
+ await Promise.all([...root.querySelectorAll('[data-client-avatar]')].map(async link=>{
+  const id=link.dataset.clientAvatar,old=link.querySelector('.avatar');
+  if(!old)return;
+  if(!cache.has(id))cache.set(id,readVisual({cid:id}).then(v=>v?.avatar?signedUrl(v.avatar):null).catch(()=>null));
+  const src=await cache.get(id);
+  if(!src||!old.isConnected)return;
+  const img=document.createElement('img');
+  img.className='avatar';img.alt='Foto de perfil';img.decoding='async';
+  img.onload=()=>{if(old.isConnected)old.replaceWith(img);};
+  img.src=src;
+ }));
+}
 export async function patientIdentity(root,client,status,facts=''){
  if(!root)return;
  const render=data=>{
