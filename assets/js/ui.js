@@ -15,7 +15,7 @@ export function modal(title,content){$('dialog')?.remove();const d=document.crea
 // Botão de modo claro/escuro: a escolha fica salva neste aparelho (theme.js aplica antes de pintar).
 export const themeButton=()=>'<button type="button" class="button ghost theme-toggle" data-theme-toggle></button>';
 export function bindThemeToggles(root=document){
- const paint=()=>{const dark=document.documentElement.dataset.theme==='escuro';$$('[data-theme-toggle]',root).forEach(b=>{b.innerHTML=icon(dark?'sun':'moon');b.setAttribute('aria-label',dark?'Usar modo claro':'Usar modo escuro');b.setAttribute('aria-pressed',String(dark));});document.querySelector('meta[name=theme-color]')?.setAttribute('content',dark?'#0f1211':'#008060');};
+ const paint=()=>{const dark=document.documentElement.dataset.theme==='escuro';$$('[data-theme-toggle]',root).forEach(b=>{b.innerHTML=icon(dark?'sun':'moon');b.setAttribute('aria-label',dark?'Usar modo claro':'Usar modo escuro');b.setAttribute('aria-pressed',String(dark));});document.querySelector('meta[name=theme-color]')?.setAttribute('content',dark?'#0B0B0B':'#F2F0E9');};
  $$('[data-theme-toggle]',root).forEach(b=>b.onclick=()=>{const t=document.documentElement.dataset.theme==='escuro'?'claro':'escuro';document.documentElement.dataset.theme=t;try{localStorage.setItem('tema',t);}catch{}paint();});
  paint();
 }

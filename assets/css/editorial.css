@@ -1,0 +1,76 @@
+/* Direção editorial escura — nome e logotipo atuais preservados. */
+:root {
+ --fonte-titulo:'Space Grotesk','Inter',sans-serif;
+ --ss-black:#0B0B0B;--ss-surface:#151614;--ss-olive:#343A30;
+ --ss-olive-soft:#626A55;--ss-sand:#B9AA91;--ss-white:#F2F0E9;
+ --ss-muted:#A5A39B;--ss-border:#2B2C28;
+ /* Variante clara para a preferência explícita de quem já usa o aplicativo. */
+ --cor-canvas:#F2F0E9;--cor-fundo:#FAF9F5;--cor-suave:#E8E5DD;
+ --cor-linha-suave:#DEDCD3;--cor-borda:#D0CEC4;--cor-titulo:#151614;
+ --cor-texto:#494C43;--cor-placeholder:#62645C;--cor-branco:#F2F0E9;
+ --cor-primaria:#343A30;--cor-primaria-escura:#24291F;
+ --cor-primaria-suave:#E3E6DC;--cor-primaria-clara:#626A55;
+ --cor-coral:#72644D;--cor-coral-suave:#EAE3D8;
+ --cor-ambar:#72644D;--cor-ambar-suave:#EAE3D8;
+ --cor-foco:#626A5550;--cor-nav:#0B0B0B;--cor-nav-item:#242621;
+ --cor-nav-texto:#F2F0E9;--cor-botao-hover:#343A30;
+}
+:root[data-theme=escuro] {
+ color-scheme:dark;
+ --cor-canvas:var(--ss-black);--cor-fundo:var(--ss-surface);--cor-suave:#20221D;
+ --cor-linha-suave:var(--ss-border);--cor-borda:var(--ss-border);
+ --cor-titulo:var(--ss-white);--cor-texto:#C6C4BC;--cor-placeholder:var(--ss-muted);
+ --cor-branco:var(--ss-black);
+ /* Areia assegura leitura dos links; oliva fica nas superfícies e indicadores. */
+ --cor-primaria:var(--ss-sand);--cor-primaria-escura:#D0C2AC;
+ --cor-primaria-suave:var(--ss-olive);--cor-primaria-clara:var(--ss-olive-soft);
+ --cor-coral:var(--ss-olive-soft);--cor-coral-suave:#23271F;
+ --cor-ambar:var(--ss-sand);--cor-ambar-suave:#29261F;
+ --cor-foco:#B9AA9160;--cor-nav:#0B0B0B;--cor-nav-item:#252820;
+ --cor-nav-texto:var(--ss-white);--cor-botao-hover:#D8D3C7;
+ --cor-overlay:#000000B3;
+}
+body{font-family:Inter,system-ui,sans-serif;line-height:1.6}
+h1,h2,h3,.stat strong,.progress-ring strong,.streak-card>strong,.evolution-number{font-family:var(--fonte-titulo);font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+h1,.patient-identity-copy h1{font-size:clamp(30px,3vw,36px);line-height:1.15}
+h2{font-size:22px;line-height:1.3}h3{font-size:18px;line-height:1.4;font-weight:500}
+.card h2,.patient-section-heading h2{font-size:18px}
+.eyebrow,.patient-identity-label{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.button,button,input,select,textarea{font-family:Inter,system-ui,sans-serif}
+.button{font-weight:600;font-size:14px;border-radius:10px;min-height:46px}
+.button.secondary{background:var(--cor-suave);border:1px solid var(--cor-borda);color:var(--cor-titulo)}
+:root[data-theme=escuro] .button.secondary:hover{background:var(--ss-olive);border-color:var(--ss-olive-soft)}
+.card,.stat,.patient-workspace .patient-section,.heading-copy.patient-identity{border:1px solid var(--cor-borda);box-shadow:none;border-radius:20px}
+.sidebar,.mobile-header{background:var(--cor-canvas);border-color:var(--cor-borda)}
+.sidebar nav a.active{background:var(--cor-primaria-suave);color:var(--cor-titulo)}
+.sidebar nav a{font-size:14px}.sidebar nav{gap:6px}
+.page-heading{margin-bottom:28px}.heading-copy>p{font-size:14px;color:var(--cor-placeholder);margin-top:10px}
+input:not([type=checkbox]):not([type=radio]),select,textarea{border-radius:10px;line-height:1.5}
+input[type=checkbox],input[type=radio]{accent-color:var(--cor-primaria)}
+.option-chip:has(input:checked){background:var(--cor-primaria-suave);outline-color:var(--cor-primaria);color:var(--cor-titulo)}
+.progress span,.kcal-bar>span{background:var(--cor-primaria-clara)}
+.floating-nav{border:1px solid var(--ss-border);box-shadow:0 8px 24px #0003}
+.floating-nav a[aria-current=page]{background:var(--ss-white);color:var(--ss-black)}
+.auth-art{opacity:.7}.auth .eyebrow{margin-top:8px}
+.auth h1{font-size:34px}.auth footer{border-top:1px solid var(--cor-borda);padding-top:22px}
+.patient-identity-avatar{background:var(--cor-primaria-suave);color:var(--cor-titulo)}
+.notif-icon{background:var(--cor-suave);color:var(--cor-primaria)}
+/* Menu editorial: linhas discretas e acentos contidos, como a referência. */
+.sidebar nav a{border-bottom:1px solid var(--cor-borda);border-radius:0;min-height:52px;padding:14px 12px;letter-spacing:.01em}
+.sidebar nav a.active{border-radius:8px;border-bottom-color:transparent}
+.sidebar nav a:not(.active):hover{background:var(--cor-suave)}
+.sidebar nav a .ui-icon{width:18px;height:18px;color:var(--cor-placeholder)}
+.sidebar nav a.active .ui-icon{color:var(--cor-primaria)}
+.context-rail .rail-link{padding:16px 0;border-bottom:1px solid var(--cor-borda);border-radius:0}
+.context-rail .rail-link:last-child{border-bottom:0}
+.auth-art{display:none}
+.auth{border:1px solid var(--cor-borda);border-radius:20px;background:var(--cor-fundo);padding:36px}
+.auth .brand{margin-bottom:48px}
+:root[data-theme=escuro] .auth{background:linear-gradient(160deg,#20251D 0%,#151614 30%,#151614 100%)}
+[data-role=cliente] .day-hero{background:var(--cor-fundo);border:1px solid var(--cor-borda)}
+[data-role=cliente] .week-strip{background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:16px}
+[data-role=cliente] .card{border-radius:20px}
+.ring-value{stroke:var(--cor-primaria-clara)}
+@media(max-width:600px){.auth{margin:24px 16px;padding:26px 22px}.sidebar nav a{min-height:52px}.context-rail{display:none}}
+@media(max-width:600px){h1,.patient-identity-copy h1{font-size:30px}.auth h1{font-size:30px}.page-heading{margin-bottom:22px}.card,.stat{border-radius:18px}.patient-identity-copy h1{font-size:24px}.patient-section-heading h2{font-size:17px}}
+@media print{body{background:white!important;color:#151614!important}.card{background:white!important;color:#151614!important}:root,:root[data-theme=escuro]{--cor-titulo:#151614;--cor-texto:#343A30;--cor-fundo:#fff;--cor-canvas:#fff;--cor-placeholder:#62645C;--cor-borda:#D0CEC4;--cor-primaria:#343A30}}
