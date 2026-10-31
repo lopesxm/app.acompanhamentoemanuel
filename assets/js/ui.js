@@ -1,3 +1,4 @@
+import {brandLink,brandArt} from './brand.js';
 import {initMotion} from './motion.js';
 import {icon,heroArt} from './visuals.js';
 import {escapeHTML as e} from './domain.js';
@@ -23,7 +24,7 @@ export function shell(p,title,subtitle='',action='') {
  const admin=p.papel==='admin';
  const links=admin?[['index','dashboard','Visão geral'],['clientes','people','Clientes'],['alimentos','leaf','Banco de alimentos'],['modelos','folder','Modelos'],['comunidade','chat','Comunidade']]:[['hoje','home','Início'],['plano','plate','Plano alimentar'],['registrar','record','Registrar'],['evolucao','chart','Evolução'],['comunidade','people','Comunidade'],['perfil','people','Perfil'],['ficha','plan','Minha ficha']];
  const current=location.pathname.split('/').pop().replace('.html','');
- const brand='<a class="brand" href="/'+(admin?'admin/index':'app/hoje')+'.html"><span class="brand-icon">↗</span> emanuel<span class="muted">.</span></a>';
+ const brand=brandLink('/'+(admin?'admin/index':'app/hoje')+'.html');
  const nav=links.map(([path,glyph,text])=>`<a class="${current===path?'active':''}" ${current===path?'aria-current="page"':''} href="/${admin?'admin':'app'}/${path}.html">${icon(glyph)}<span>${text}</span></a>`).join('');
  const initials=e(p.nome.split(' ').map(x=>x[0]).slice(0,2).join(''));
  document.body.dataset.role=p.papel;document.body.dataset.screen=current;

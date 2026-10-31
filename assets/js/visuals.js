@@ -1,3 +1,4 @@
+import {brandIcon} from './brand.js';
 // Ilustrações decorativas e ícones locais: nenhum dado ou imagem de cliente.
 const paths={
  home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/>',
@@ -22,6 +23,7 @@ const paths={
  bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
  whatsapp:'<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7Z"/><path d="M9.5 9c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-1.5-1-2-2l1-1-1-2Z"/>'
 };
-export const icon=(name,cls='')=>`<svg class="ui-icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name]||paths.leaf}</svg>`;
+const branded={plate:'nutricao',people:'comunidade',chart:'evolucao',spark:'energia',treino:'treino',mentalidade:'mentalidade'};
+export const icon=(name,cls='')=>branded[name]?brandIcon(branded[name],cls):`<svg class="ui-icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[name]||paths.leaf}</svg>`;
 export function mealVisual(name,time){const n=name.toLowerCase();const kind=/café|cafe|desjejum/.test(n)?'breakfast':/lanche|pré|pós/.test(n)?'snack':/jantar|ceia/.test(n)||Number(time?.slice(0,2))>=18?'dinner':'lunch';return `<span class="meal-art ${kind}" aria-hidden="true"><img src="/assets/img/${kind}.svg" alt="" width="80" height="80" loading="lazy"></span>`;}
 export const heroArt=()=>'<div class="hero-art" aria-hidden="true"><span class="hero-orbit orbit-one"></span><span class="hero-orbit orbit-two"></span><img src="/assets/img/nutrition-garden.svg" alt="" width="280" height="210"><span class="floating-leaf">'+icon('leaf')+'</span></div>';

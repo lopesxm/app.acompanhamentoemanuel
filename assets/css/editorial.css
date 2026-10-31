@@ -89,3 +89,14 @@ input::placeholder,textarea::placeholder{color:var(--cor-placeholder);opacity:1}
 .team-intro{border-top:2px solid var(--gs-brown)}
 .auth .eyebrow{letter-spacing:.12em}.brand-signature{font-size:11px;letter-spacing:.14em;line-height:1.8;color:var(--cor-placeholder);margin-top:24px}
 @media(max-width:600px){.card,.stat{padding:16px}h1{overflow-wrap:anywhere}}
+
+/* Original styleboard artwork, displayed without redrawing the mark. */
+.grinders-art{overflow:hidden;filter:contrast(1.35);mix-blend-mode:screen;flex-shrink:0}
+.grinders-brand{display:inline-flex;align-items:center;gap:10px;max-width:100%;line-height:1}
+.grinders-brand .grinders-symbol{width:36px;height:36px}
+.grinders-brand .grinders-horizontal{width:158px;height:40px}
+.auth-brand-art{display:flex;justify-content:center;margin:32px 0}
+.auth-brand-art .grinders-vertical{width:220px;height:145px}
+:root:not([data-theme=escuro]) .grinders-art{filter:contrast(1.35) invert(1);mix-blend-mode:multiply}
+.ui-icon.grinders-art{width:24px;height:24px}
+@media(max-width:600px){.mobile-header .grinders-brand{gap:6px}.mobile-header .grinders-horizontal{width:116px;height:32px}.mobile-header .grinders-symbol{width:28px;height:28px}}
