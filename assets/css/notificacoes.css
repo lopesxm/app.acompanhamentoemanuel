@@ -42,4 +42,6 @@ a.patient-fact:hover{background:var(--cor-primaria-suave)}
 /* Resposta do cliente no diário. */
 .diary-reply{border-left:3px solid var(--cor-primaria)}
 
-.notif-beta{padding:18px;margin-bottom:16px;border:1px solid var(--cor-borda);border-radius:14px;background:var(--cor-primaria-suave)}.notif-beta h3{margin:12px 0 8px}.notif-beta p{font-size:14px;line-height:1.6;margin:8px 0;color:var(--cor-texto)}
+.notif-beta{padding:18px;margin-bottom:16px;border:1px solid var(--cor-borda);border-radius:14px;background:var(--cor-fundo)}.notif-beta h3{margin:12px 0 8px}.notif-beta p{font-size:14px;line-height:1.6;margin:8px 0;color:var(--cor-texto)}
+
+.notif-beta .badge{background:transparent;color:var(--cor-placeholder);padding:0}.notif-beta p{color:var(--cor-placeholder)}
