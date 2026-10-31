@@ -1,6 +1,6 @@
 # Arte aplicada
 
-A marca no login, menu, cabeçalho e página pública da equipe usa a própria imagem do styleboard fornecido, preservada em assets/img/grinders-styleboard.png. brand.js define janelas SVG sobre essa imagem, sem reinterpretar o desenho. O GS segue o painel vertical e o ícone do aplicativo; o painel intitulado Símbolo contém uma variante diferente.
+A marca no login, menu, cabeçalho e página pública da equipe usa a própria imagem do styleboard fornecido, preservada em assets/img/grinders-styleboard.png. brand.js define janelas SVG sobre essa imagem, sem reinterpretar o desenho. O símbolo principal aprovado é o do painel intitulado Símbolo. Ele aparece no cabeçalho, menu, composição vertical do login e favicon/ícone do aplicativo. A variante GS do painel vertical original não é usada.
 
 Nutrição, evolução, comunidade e energia usam os ícones da faixa original. Treino e mentalidade estão disponíveis sem criar funcionalidades novas. Os demais controles mantêm ícones funcionais.
 

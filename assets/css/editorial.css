@@ -100,3 +100,6 @@ input::placeholder,textarea::placeholder{color:var(--cor-placeholder);opacity:1}
 :root:not([data-theme=escuro]) .grinders-art{filter:contrast(1.35) invert(1);mix-blend-mode:multiply}
 .ui-icon.grinders-art{width:24px;height:24px}
 @media(max-width:600px){.mobile-header .grinders-brand{gap:6px}.mobile-header .grinders-horizontal{width:116px;height:32px}.mobile-header .grinders-symbol{width:28px;height:28px}}
+
+/* Símbolo principal aprovado: variante do painel Símbolo. */
+.auth-brand-art .grinders-vertical{height:182px}

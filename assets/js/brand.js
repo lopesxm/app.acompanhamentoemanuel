@@ -2,7 +2,8 @@
 // Não são arquivos vetoriais mestres; a imagem permanece intacta.
 const source='/assets/img/grinders-styleboard.png';
 export const brandArt=(variant='horizontal')=>{
- const boxes={horizontal:'1282 176 234 59',vertical:'1007 132 220 145',symbol:'1061 132 101 91'};
+ if(variant==='vertical')return `<svg class="grinders-art grinders-vertical" viewBox="0 0 234 194" role="img" aria-label="Grinders Society" focusable="false"><svg x="55" y="0" width="124" height="112" viewBox="787 139 139 116" overflow="hidden"><image href="${source}" width="1536" height="1024"/></svg><svg x="0" y="128" width="234" height="59" viewBox="1282 176 234 59" overflow="hidden"><image href="${source}" width="1536" height="1024"/></svg></svg>`;
+ const boxes={horizontal:'1282 176 234 59',symbol:'787 139 139 116'};
  return `<svg class="grinders-art grinders-${variant}" viewBox="${boxes[variant]||boxes.horizontal}" role="img" aria-label="Grinders Society" focusable="false"><image href="${source}" width="1536" height="1024"/></svg>`;
 };
 export const brandLink=(href='/login.html')=>`<a class="brand grinders-brand" href="${href}" aria-label="Grinders Society — início">${brandArt('symbol')}${brandArt()}</a>`;
