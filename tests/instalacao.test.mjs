@@ -21,6 +21,6 @@ test('instalar_tudo.sql traz todas as migrações e instala num banco limpo',asy
  insert into auth.users values('00000000-0000-4000-8000-000000000001','emanuel@exemplo.test');`);
  await db.exec(all.replace('create extension if not exists pgcrypto;',''));
  const row=(await db.query(`select (select count(*)::int from information_schema.tables where table_schema='public') tabelas,(select count(*)::int from storage.buckets where id='saude') bucket_saude,(select count(*)::int from public.perfis where papel='admin') admins`)).rows[0];
- assert.deepEqual(row,{tabelas:26,bucket_saude:1,admins:1});
+ assert.deepEqual(row,{tabelas:28,bucket_saude:1,admins:1});
  }finally{await db.close();}
 });
