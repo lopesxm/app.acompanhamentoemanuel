@@ -25,7 +25,8 @@ function item(x,fresh){
 async function open(modal){
  await refresh();
  const fresh=new Set(rows.filter(x=>!x.lida_em).map(x=>x.id));
- const d=modal('Notificações',rows.length?`<div class="notif-list">${rows.map(x=>item(x,fresh.has(x.id))).join('')}</div>`:`<div class="notif-empty">${icon('bell')}<p>Nada novo por aqui. Quando ${me.papel==='admin'?'alguém registrar, postar ou responder':'o Emanuel comentar, publicar seu plano ou alguém responder'}, aparece aqui.</p></div>`);
+ const betaNotice=`<section class="notif-beta" aria-label="Aviso sobre a versão beta"><span class="badge">Aviso da Grinders Society</span><h3>Estamos na fase beta</h3><p>O aplicativo está em desenvolvimento e continuará recebendo melhorias.</p><p>Seus dados são salvos normalmente. A transição para a versão definitiva está planejada para preservar os dados já cadastrados.</p></section>`;
+ const d=modal('Notificações',betaNotice+(rows.length?`<div class="notif-list">${rows.map(x=>item(x,fresh.has(x.id))).join('')}</div>`:`<div class="notif-empty">${icon('bell')}<p>Nada novo por aqui. Quando ${me.papel==='admin'?'alguém registrar, postar ou responder':'o Emanuel comentar, publicar seu plano ou alguém responder'}, aparece aqui.</p></div>`));
  d.classList.add('notif-dialog');
  d.querySelectorAll('.notif-item').forEach(a=>a.addEventListener('click',async ev=>{
   ev.preventDefault();
