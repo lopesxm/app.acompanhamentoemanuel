@@ -180,10 +180,10 @@ async function adminBrotherhood(root,p){
 const societySections=[
  ['mission','My Mission','Meus objetivos','Defina o que você quer alcançar e alinhe seus objetivos com o acompanhamento.'],
  ['progress','My Progress','Minha evolução','Acompanhe medidas, registros e mudanças ao longo do tempo.'],
- ['grind','Daily Grind','Minha rotina diária','Registre suas refeições e mantenha os compromissos do dia em vista.'],
+ ['grind','The Grind','Minha rotina diária','Registre suas refeições e mantenha os compromissos do dia em vista.'],
  ['standard','The Standard','Minha consistência','Observe sua frequência de registros e a adesão ao plano.'],
  ['challenges','Society Challenges','Desafios coletivos','Um espaço para propostas de participação e evolução em comunidade.'],
- ['brotherhood','The Brotherhood','Comunidade e conexões','Compartilhe experiências, interaja com os membros e acompanhe os recados da equipe.']
+ ['brotherhood','The Society','Comunidade e conexões','Compartilhe experiências, interaja com os membros e acompanhe os recados da equipe.']
 ];
 export async function communityPage(root,c,p){await societyHub(root,p,pane=>memberBrotherhood(pane,c,p));}
 export async function adminCommunity(root,p){await societyHub(root,p,pane=>adminBrotherhood(pane,p));}
