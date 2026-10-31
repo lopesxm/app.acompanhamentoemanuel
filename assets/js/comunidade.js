@@ -45,14 +45,14 @@ async function renderPosts(root,args,admin,emptyText,count=PAGE){
 }
 
 // Cliente
-export async function communityPage(root,c,p){
+async function memberBrotherhood(root,c,p){
  const state=await rpc('minha_comunidade');
- if(!state.perfil?.ativo){await activation(root,c,state.perfil,()=>communityPage(root,c,p));const group=document.createElement('div');group.style.marginTop='24px';root.append(group);await groupTab(group);return;}
+ if(!state.perfil?.ativo){await activation(root,c,state.perfil,()=>memberBrotherhood(root,c,p));const group=document.createElement('div');group.style.marginTop='24px';root.append(group);await groupTab(group);return;}
  const tabs=[['feed','Feed'],['ranking','Ranking'],['amigos',`Amigos${state.pedidos.length?` (${state.pedidos.length})`:''}`],['grupo','Grupo do WhatsApp']];
  const target=location.hash.startsWith('#post-')?location.hash.slice(6):null;
  const current=tabs.some(([k])=>k===location.hash.slice(1))?location.hash.slice(1):'feed';
  root.innerHTML=`<div class="row" style="justify-content:space-between"><div class="tabs" role="tablist" style="margin:0">${tabs.map(([k,t])=>`<button role="tab" data-tab="${k}" class="${k===current?'active':''}" aria-selected="${k===current}">${t}</button>`).join('')}</div><a class="button secondary" href="/app/perfil.html">Meu perfil</a></div><div id="community-tab" style="margin-top:24px"></div>`;
- const show=async k=>{history.replaceState(null,'','#'+k);$$('[data-tab]',root).forEach(el=>{el.classList.toggle('active',el.dataset.tab===k);el.setAttribute('aria-selected',String(el.dataset.tab===k));});const pane=$('#community-tab',root);if(k==='feed')await feedTab(pane,c,state,()=>communityPage(root,c,p));if(k==='ranking')await rankingTab(pane);if(k==='amigos')await friendsTab(pane,state,()=>communityPage(root,c,p));if(k==='grupo')await groupTab(pane);};
+ const show=async k=>{history.replaceState(null,'','#'+k);$$('[data-tab]',root).forEach(el=>{el.classList.toggle('active',el.dataset.tab===k);el.setAttribute('aria-selected',String(el.dataset.tab===k));});const pane=$('#community-tab',root);if(k==='feed')await feedTab(pane,c,state,()=>memberBrotherhood(root,c,p));if(k==='ranking')await rankingTab(pane);if(k==='amigos')await friendsTab(pane,state,()=>memberBrotherhood(root,c,p));if(k==='grupo')await groupTab(pane);};
  $$('[data-tab]',root).forEach(el=>on(el,'click',()=>show(el.dataset.tab)));
  await show(current);
  focusPost(root,target);
@@ -167,12 +167,46 @@ export async function adminClientCommunity(pane,c){
  pane.innerHTML=`<section class="card">${profileHead(x)}${profileStats(x)}</section><section class="card" style="margin-top:20px"><h2>Sua rotina nas últimas semanas</h2>${weeklyChart(x.semanas)}</section><div id="client-posts" style="margin-top:24px"></div>`;
  await renderPosts($('#client-posts',pane),{p_cliente:c.id},true,'Esse cliente ainda não postou nada.');
 }
-export async function adminCommunity(root,p){
+async function adminBrotherhood(root,p){
  const target=location.hash.startsWith('#post-')?location.hash.slice(6):null;
  root.innerHTML=`<div id=visual-profile></div><div id="group-settings" style="margin-bottom:24px"></div><section class="card composer"><h2>Postar pra comunidade</h2><p class="muted">Seus posts aparecem pra todo cliente que ativou a comunidade. Os posts dos clientes entram direto, e você pode esconder o que não estiver legal.</p><form id="tip">${field('texto','Dica, desafio ou recado','','textarea')}<div class="field"><label for="tip-photo">Foto (opcional)</label><input id="tip-photo" name="file" type="file" accept="image/jpeg,image/png,image/webp"></div><button class="button" type="submit">Postar</button></form></section><div id="posts" style="margin-top:24px"></div>`;
- on($('#tip',root),'submit',async()=>{const f=new FormData($('#tip',root));const file=f.get('file');if(file?.size)validateImage(file);let path=null;if(file&&file.size)path=await upload(`comunidade/${p.id}`,file);try{await rpc('postar_dica',{p_texto:f.get('texto'),foto:path});}catch(err){if(path)await deleteFile(path);throw err;}toast('Post no ar! 🚀');await adminCommunity(root,p);});
+ on($('#tip',root),'submit',async()=>{const f=new FormData($('#tip',root));const file=f.get('file');if(file?.size)validateImage(file);let path=null;if(file&&file.size)path=await upload(`comunidade/${p.id}`,file);try{await rpc('postar_dica',{p_texto:f.get('texto'),foto:path});}catch(err){if(path)await deleteFile(path);throw err;}toast('Post no ar! 🚀');await adminBrotherhood(root,p);});
  await visualCard($('#visual-profile',root),{},true);
  await groupSettings($('#group-settings',root),p);
  await renderPosts($('#posts',root),{},true,'Ninguém postou ainda. Que tal começar com uma dica?');
  focusPost(root,target);
+}
+
+const societySections=[
+ ['mission','My Mission','Meus objetivos','Defina o que você quer alcançar e alinhe seus objetivos com o acompanhamento.'],
+ ['progress','My Progress','Minha evolução','Acompanhe medidas, registros e mudanças ao longo do tempo.'],
+ ['grind','Daily Grind','Minha rotina diária','Registre suas refeições e mantenha os compromissos do dia em vista.'],
+ ['standard','The Standard','Minha consistência','Observe sua frequência de registros e a adesão ao plano.'],
+ ['challenges','Society Challenges','Desafios coletivos','Um espaço para propostas de participação e evolução em comunidade.'],
+ ['brotherhood','The Brotherhood','Comunidade e conexões','Compartilhe experiências, interaja com os membros e acompanhe os recados da equipe.']
+];
+export async function communityPage(root,c,p){await societyHub(root,p,pane=>memberBrotherhood(pane,c,p));}
+export async function adminCommunity(root,p){await societyHub(root,p,pane=>adminBrotherhood(pane,p));}
+async function societyHub(root,p,brotherhood){
+ const admin=p.papel==='admin';
+ root.innerHTML=`<div class="society-sections" role="tablist" aria-label="Áreas da Grinders Society">${societySections.map(([key,title,label])=>`<button type="button" role="tab" id="society-${key}" data-society="${key}" aria-selected="${key==='brotherhood'}" aria-controls="society-panel"><strong>${title}</strong><span>${label}</span></button>`).join('')}</div><section id="society-panel" role="tabpanel" aria-labelledby="society-brotherhood"></section>`;
+ const panel=$('#society-panel',root);
+ const show=async key=>{
+  const section=societySections.find(x=>x[0]===key);
+  $$('[data-society]',root).forEach(button=>{button.setAttribute('aria-selected',String(button.dataset.society===key));});
+  panel.setAttribute('aria-labelledby','society-'+key);
+  panel.innerHTML=`<header class="society-heading"><h2>${section[1]}</h2><p>${section[3]}</p></header><div data-society-content></div>`;
+  const content=$('[data-society-content]',panel);
+  if(key==='brotherhood'){await brotherhood(content);return;}
+  const routes={mission:['/app/ficha.html','Ver meus objetivos'],progress:['/app/evolucao.html','Ver minha evolução'],grind:['/app/hoje.html','Ver minha rotina'],standard:['/app/evolucao.html','Ver minha consistência']};
+  if(key==='challenges'){
+   content.innerHTML=`<section class="card"><span class="badge">Em preparação</span><h3>Desafios da Society</h3><p>Por enquanto, os desafios podem ser divulgados nas publicações da comunidade. Inscrição, metas coletivas e acompanhamento dos participantes ainda não estão disponíveis.</p><button class="button secondary" data-open-brotherhood>Ver publicações da comunidade</button></section>`;
+   on($('[data-open-brotherhood]',content),'click',()=>show('brotherhood'));return;
+  }
+  const [href,label]=admin?['/admin/clientes.html','Escolher um cliente']:routes[key];
+  const text=admin?'Abra o perfil de um cliente para consultar seus objetivos, evolução e registros.':key==='mission'?'Seu objetivo informado na ficha orienta o acompanhamento nutricional.':key==='progress'?'Veja as medidas e os resultados registrados no seu acompanhamento.':key==='grind'?'Consulte as refeições previstas e registre o que fez hoje.':'Veja a adesão e os dias registrados. A consistência é acompanhada a partir dos seus registros.';
+  content.innerHTML=`<section class="card"><h3>${section[2]}</h3><p>${text}</p><a class="button" href="${href}">${label} →</a></section>`;
+ };
+ $$('[data-society]',root).forEach((button,index)=>{on(button,'click',()=>show(button.dataset.society));button.addEventListener('keydown',event=>{if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const buttons=$$('[data-society]',root),next=event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();buttons[next].click();});});
+ await show('brotherhood');
 }
