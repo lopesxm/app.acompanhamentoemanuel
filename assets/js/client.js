@@ -38,7 +38,7 @@ async function todayPage(root,c,p,page){const [plans,history,fichas,comments]=aw
   on($('#dismiss-guide',root),'click',()=>{guide.open=false;try{localStorage.setItem(guideKey,'seen');}catch{}});
  }
 
- else root.innerHTML=`<a class="plan-contact" href="/app/suporte.html">Falar com a equipe →</a>${fichaNotice}${futureNotice}${plan?'<button class="button secondary no-print" id="print" style="margin-bottom:20px">Imprimir / salvar PDF</button>':''}${planHTML(plan,false,records,choices,active)}`;
+ else root.innerHTML=`<a class="plan-contact" href="/equipe.html">Falar com a equipe →</a>${fichaNotice}${futureNotice}${plan?'<button class="button secondary no-print" id="print" style="margin-bottom:20px">Imprimir / salvar PDF</button>':''}${planHTML(plan,false,records,choices,active)}`;
  $$('[data-choice-group]',root).forEach(input=>on(input,'change',async()=>{
  const gid=input.dataset.choiceGroup,article=input.closest('[data-meal]'),group=plan.refeicoes.flatMap(m=>m.grupos).find(g=>g.id===gid),old=choices.find(x=>x.grupo_id===gid)?.opcao_id||records.find(r=>r.refeicao_id===article.dataset.meal)?.opcoes_escolhidas.find(id=>group.opcoes.some(o=>o.id===id))||[...group.opcoes].sort((a,b)=>a.ordem-b.ordem)[0]?.id;
  const controls=$$('input,button',article);controls.forEach(el=>el.disabled=true);
