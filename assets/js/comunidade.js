@@ -189,17 +189,17 @@ const societySections=[
  ['challenges','Society Challenges','Desafios coletivos','Um espaço para propostas de participação e evolução em comunidade.'],
  ['brotherhood','The Society','Comunidade e conexões','Compartilhe experiências, interaja com os membros e acompanhe os recados da equipe.']
 ];
-export async function communityPage(root,c,p){await societyHub(root,p,pane=>memberBrotherhood(pane,c,p));}
+export async function communityPage(root,c,p){await memberBrotherhood(root,c,p);}
 export async function adminCommunity(root,p){await societyHub(root,p,pane=>adminBrotherhood(pane,p));}
 async function societyHub(root,p,brotherhood){
  const admin=p.papel==='admin';
- root.innerHTML=`<div class="society-sections" role="tablist" aria-label="Áreas da Grinders Society">${societySections.map(([key,title,label])=>`<button type="button" role="tab" id="society-${key}" data-society="${key}" aria-selected="${key==='brotherhood'}" aria-controls="society-panel"><strong>${title}</strong><span>${label}</span></button>`).join('')}</div><section id="society-panel" role="tabpanel" aria-labelledby="society-brotherhood"></section>`;
+ root.innerHTML=`<div class="society-sections" role="tablist" aria-label="Áreas da Grinders Society">${societySections.map(([key,title,label])=>`<button type="button" role="tab" id="society-${key}" data-society="${key}" aria-selected="${key==='brotherhood'}" aria-controls="society-panel"><strong>${label}</strong></button>`).join('')}</div><section id="society-panel" role="tabpanel" aria-labelledby="society-brotherhood"></section>`;
  const panel=$('#society-panel',root);
  const show=async key=>{
   const section=societySections.find(x=>x[0]===key);
   $$('[data-society]',root).forEach(button=>{button.setAttribute('aria-selected',String(button.dataset.society===key));});
   panel.setAttribute('aria-labelledby','society-'+key);
-  panel.innerHTML=`<header class="society-heading"><h2>${section[1]}</h2><p>${section[3]}</p></header><div data-society-content></div>`;
+  panel.innerHTML=`<header class="society-heading"><h2>${section[2]}</h2><p>${section[3]}</p></header><div data-society-content></div>`;
   const content=$('[data-society-content]',panel);
   if(key==='brotherhood'){await brotherhood(content);return;}
   const routes={mission:['/app/ficha.html','Ver meus objetivos'],progress:['/app/evolucao.html','Ver minha evolução'],grind:['/app/hoje.html','Ver minha rotina'],standard:['/app/evolucao.html','Ver minha consistência']};
