@@ -1,0 +1,21 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {PGlite} from '@electric-sql/pglite';import {readFile} from 'node:fs/promises';
+test('pontuação aplica limites e remove ações ocultas sem contar interação própria',async()=>{const db=new PGlite();try{await db.exec(`create role anon;create role authenticated;
+create table clientes(id uuid,usuario_id uuid);
+create table registros_refeicao(cliente_id uuid,criado_em timestamptz);
+create table posts(id uuid,nutricionista_id uuid,cliente_id uuid,oculto boolean,criado_em timestamptz);
+create table comentarios_post(post_id uuid,autor_id uuid,oculto boolean,criado_em timestamptz);
+create table curtidas(post_id uuid,perfil_id uuid,criado_em timestamptz);
+create function visual_perfil(cid uuid default null,emanuel boolean default false) returns jsonb language plpgsql as $$declare uid uuid:=cid;begin return jsonb_build_object('meu',uid=cid);end$$;`);
+await db.exec(await readFile('supabase/migrations/010_pontos_grinder.sql','utf8'));
+const a='00000000-0000-0000-0000-000000000001',b='00000000-0000-0000-0000-000000000002';
+await db.query('insert into clientes values($1,$1)',[a]);
+await db.query(`insert into registros_refeicao select $1,now() from generate_series(1,20)`,[a]);
+await db.query(`insert into posts values($1,$1,null,false,now()),($2,$2,null,false,now())`,[a,b]);
+await db.query(`insert into comentarios_post select $1,$2,false,now() from generate_series(1,10)`,[b,a]);
+await db.query(`insert into curtidas values($1,$1,now()),($2,$1,now())`,[a,b]);
+const score=async()=>Number((await db.query('select pontos_grinder($1) score',[a])).rows[0].score);
+assert.equal(await score(),49); // 35 refeições/rotina + 10 post + 3 comentário + 1 curtida
+await db.query('update posts set oculto=true where id=$1',[b]);assert.equal(await score(),45);
+await db.exec(await readFile('supabase/migrations/010_pontos_grinder.sql','utf8'));assert.equal(await score(),45);
+await db.exec('set role authenticated');await assert.rejects(db.query('select pontos_grinder($1)',[a]));
+}finally{await db.close();}});
