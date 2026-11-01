@@ -1,3 +1,4 @@
+import {profileLevel} from './profile-level.js';
 import {visualCard,authorPhotos,validateImage} from './profile-visual.js';
 import {icon} from './visuals.js';
 import {rpc,list,save,signedUrl,upload,deleteFile} from './supabase.js';
@@ -102,8 +103,11 @@ async function feedTab(pane,c,state,refresh){
  await renderPosts($('#posts',pane),{},false,'Ainda não há publicações. Encontre pessoas na aba Amigos ou compartilhe seu resumo do dia.');
 }
 async function rankingTab(pane){
- const rows=await rpc('ranking_semanal');const medal=['🥇','🥈','🥉'];
- pane.innerHTML=`<section class="card"><h2>Ranking da semana</h2><p class="muted">Adesão ao plano entre você e quem você segue. Zera toda segunda.</p><ol class="ranking">${rows.map((r,i)=>`<li class="${r.eu?'me':''}"><span class="position">${medal[i]||i+1}</span>${avatar(r.nome)}<div><strong>${e(r.nome)}${r.eu?' (você)':''}</strong><br><small>@${e(r.usuario)}</small></div><div class="ranking-bar"><span style="width:${r.adesao||0}%"></span></div><strong>${r.adesao===null?'—':r.adesao+'%'}</strong></li>`).join('')}</ol>${rows.length<2?'<p class="muted">Segue mais gente na aba Amigos pra ranking ficar disputado 👀</p>':''}</section>`;
+ const members=await rpc('ranking_semanal');
+ const rows=await Promise.all(members.map(async r=>{try{const v=await rpc('visual_perfil',{cid:r.cliente_id});return {...r,level:profileLevel(v?.pontos)};}catch{return {...r,level:null};}}));
+ rows.sort((a,b)=>(b.level?.points??-1)-(a.level?.points??-1)||a.nome.localeCompare(b.nome,'pt-BR'));
+ let previous=null,position=0;
+ pane.innerHTML=`<section class="card"><h2>Ranking Grinder</h2><p class="muted">Pontos acumulados entre você e quem você segue. As patentes não zeram na segunda-feira.</p><ol class="ranking grinder-ranking">${rows.map((r,i)=>{if(!r.level||r.level.points!==previous)position=i+1;previous=r.level?.points;return `<li class="${r.eu?'me':''}"><span class="position" aria-label="Posição ${position}">${r.level?position:'—'}</span>${avatar(r.nome)}<a class="ranking-identity" href="/app/perfil.html?id=${encodeURIComponent(r.cliente_id)}"><strong>${e(r.nome)}${r.eu?' (você)':''}</strong><small>@${e(r.usuario)}</small>${r.level?`<span class="rank-label level-${r.level.key}">◇ Grinder ${r.level.name}</span>`:'<small>Pontuação indisponível</small>'}</a><div class="ranking-score"><strong>${r.level?r.level.points.toLocaleString('pt-BR')+' pts':'—'}</strong>${r.level?`<small>${r.level.next?'Próxima: '+r.level.next:'Patente máxima'}</small>`:''}</div></li>`;}).join('')}</ol>${!rows.length?'<p class="muted">Nenhum membro disponível no ranking.</p>':rows.length<2?'<p class="muted">Encontre membros na aba Amigos para acompanhar a jornada deles.</p>':''}<details><summary>Adesão ao plano nesta semana</summary><p class="muted">Este indicador é separado dos pontos e reinicia toda segunda-feira.</p>${members.map(r=>`<div class="ranking-week"><span>${e(r.nome)}</span><strong>${r.adesao===null?'Sem dados':r.adesao+'%'}</strong></div>`).join('')}</details></section>`;
 }
 async function friendsTab(pane,state,refresh){
  const row=(x,buttons)=>`<div class="alert-item"><a class="post-author" href="/app/perfil.html?id=${x.cliente_id}">${avatar(x.nome)}<div><strong>${e(x.nome)}</strong><br><small>@${e(x.usuario)}</small></div></a><div class="row">${buttons}</div></div>`;
