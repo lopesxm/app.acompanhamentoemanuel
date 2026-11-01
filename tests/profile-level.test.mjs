@@ -1,8 +1,8 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import {profileLevel} from '../assets/js/profile-level.js';
-test('níveis por pontos, limites e progresso',()=>{
- for(const [points,name] of [[0,'Bronze'],[99,'Bronze'],[100,'Prata'],[499,'Prata'],[500,'Ouro'],[1500,'Platina'],[3000,'Diamante']])assert.equal(profileLevel(points).name,name);
- assert.equal(profileLevel(99).remaining,1);assert.equal(profileLevel(100).progress,0);assert.equal(profileLevel(4000).next,null);
+import test from 'node:test';import assert from 'node:assert/strict';
+import {profileLevel,levels,levelCard} from '../assets/js/profile-level.js';
+test('cada patente exige o marco completo de pontos',()=>{
+ assert.equal(levels.length,10);
+ levels.forEach(([,name,min],i)=>{assert.equal(profileLevel(min).name,name);if(i)assert.equal(profileLevel(min-1).name,levels[i-1][1]);});
+ assert.equal(profileLevel(749).remaining,1);assert.equal(profileLevel(750).progress,0);assert.equal(profileLevel(3000).name,'Ouro');assert.equal(profileLevel(65000).next,null);assert.equal(profileLevel(90000).progress,100);
 });
-test('não interpreta data ou pontos ausentes como pontuação',()=>{for(const x of [null,undefined,'2026-01-01',NaN,-1])assert.equal(profileLevel(x),null);});
+test('não inventa pontuação e mantém os pontos existentes',()=>{for(const x of [null,undefined,'2026-01-01',NaN,-1,Infinity])assert.equal(profileLevel(x),null);assert.equal(profileLevel(4321).points,4321);assert.match(levelCard(65000),/Patente máxima conquistada/);});
