@@ -1,3 +1,4 @@
+import {levelCard} from './profile-level.js';
 import {rpc,upload,deleteFile,signedUrl,isDemo,profile,list} from './supabase.js';
 import {escapeHTML as e} from './domain.js';
 import {$,field,on,modal,toast} from './ui.js';
@@ -26,7 +27,7 @@ export async function patientIdentity(root,client,status,facts=''){
  const name=data?.nome||client.nome;
  const initials=client.nome.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('');
  root.classList.add('patient-identity');
- root.innerHTML=`<div class="patient-identity-avatar"><span aria-hidden="true">${e(initials)}</span>${data?.avatar?picture(data.avatar,'patient-avatar-photo','Foto de perfil de '+e(name)):''}</div><div class="patient-identity-copy"><span class="patient-identity-label">Perfil do paciente</span><h1>${e(name)}</h1>${name!==client.nome?`<small class="patient-registered-name">${e(client.nome)}</small>`:''}${data?.bio?`<p class="patient-identity-bio">${e(data.bio)}</p>`:''}<span class="patient-identity-status">${e(status||'Paciente')}</span>${facts}</div>`;
+ root.innerHTML=`<div class="patient-identity-avatar"><span aria-hidden="true">${e(initials)}</span>${data?.avatar?picture(data.avatar,'patient-avatar-photo','Foto de perfil de '+e(name)):''}</div><div class="patient-identity-copy"><span class="patient-identity-label">Perfil do paciente</span><h1>${e(name)}</h1>${name!==client.nome?`<small class="patient-registered-name">${e(client.nome)}</small>`:''}${data?.bio?`<p class="patient-identity-bio">${e(data.bio)}</p>`:''}<span class="patient-identity-status">${e(status||'Paciente')}</span>${facts}${levelCard(data?.membro_desde||client.criado_em)}</div>`;
  };
  render(null);
  try{const data=await readVisual({cid:client.id});if(data){render(data);await photos(root);const img=root.querySelector('img');if(img)img.addEventListener('error',()=>img.remove(),{once:true});}}catch{/* Keep the registered identity when a visual profile is unavailable. */}
@@ -39,8 +40,9 @@ export async function visualCard(root,args={},editable=false){
  try{data=await readVisual(args);}catch{root.innerHTML=editable?'<div class="notice">A personalização do perfil precisa da atualização do banco. Seus dados atuais continuam disponíveis.</div>':'';return;}
 
  if(!data){root.innerHTML='';return;}
+ if(!data.membro_desde){try{if(args.cid)data.membro_desde=(await list('clientes',{id:args.cid}))[0]?.criado_em;else if(data.meu){const me=await profile();data.membro_desde=(await list('clientes',{usuario_id:me.id}))[0]?.criado_em||me.criado_em;}}catch{/* Other members require the profile-level migration. */}}
  const initials=data.nome.split(' ').map(s=>s[0]).slice(0,2).join('');
- root.innerHTML=`<section class="card visual-profile"><div class="visual-profile-body"><div class="profile-head">${data.avatar?picture(data.avatar,'avatar big','Foto de perfil'):`<span class="avatar big">${e(initials)}</span>`}<div><h2>${e(data.nome)}</h2><p class="profile-bio">${e(data.bio||'')}</p></div></div>${editable&&data.meu?'<button class="button secondary" data-edit-visual>Editar foto e perfil</button>':''}</div></section>`;
+ root.innerHTML=`<section class="card visual-profile"><div class="visual-profile-body"><div class="profile-head">${data.avatar?picture(data.avatar,'avatar big','Foto de perfil'):`<span class="avatar big">${e(initials)}</span>`}<div><h2>${e(data.nome)}</h2><p class="profile-bio">${e(data.bio||'')}</p></div></div>${levelCard(data.membro_desde)}${editable&&data.meu?'<button class="button secondary" data-edit-visual>Editar foto e perfil</button>':''}</div></section>`;
  await photos(root);
  on($('[data-edit-visual]',root),'click',()=>edit(data,()=>visualCard(root,args,editable)));
 }
