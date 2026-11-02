@@ -2,9 +2,11 @@
 import {tacoCalories} from './taco-calories.js';
 const key=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const byName=new Map(tacoCalories.map(([name,kcal])=>[key(name),{name,kcal}]));
+// "Arroz branco, tipo 1" é o nome de tela do "Arroz, tipo 1" da TACO.
+export const tacoKey=s=>key(s).replace(/^arroz branco tipo ([12])\b/,'arroz tipo $1');
 const MEDIDAS=new Set(['unidade','colher de sopa','fatia','porção','ml']);
 const fromBank=(descricao,unidade,banco)=>banco.find(f=>f.nome===descricao&&f.kcal!=null&&f.kcal!==''&&Number.isFinite(Number(f.kcal))&&Number(f.kcal)>=0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
-const tacoHit=descricao=>{const hit=byName.get(key(descricao));return typeof hit?.kcal==='number'?hit:null;};
+const tacoHit=descricao=>{const hit=byName.get(tacoKey(descricao));return typeof hit?.kcal==='number'?hit:null;};
 // Peso médio só onde a medida é bem padronizada. Nos outros casos quem informa é o Emanuel, na linha do alimento.
 export function pesoReferencia(descricao,unidade){return unidade==='unidade'&&/^ovo de galinha inteiro\b/.test(key(descricao))?50:null;}
 // A TACO é por 100 g: fora de gramas, a conta só existe com o peso de 1 medida.
