@@ -1,56 +1,15 @@
-// Calorias do plano. Os valores que o cliente vê são sempre os salvos pelo Emanuel em cada opção;
-// a tabela TACO só aparece como sugestão no editor, e ele decide usar ou não.
-
-// kcal por 100 g (ou 100 ml) da TACO, 4ª ed. Ordem importa: o mais específico vem antes ("doce de leite" antes de "leite").
-// porUnidade: peso médio em gramas para sugerir quando a unidade é "unidade".
-const TACO=[
- [['doce','leite'],306,'Doce de leite cremoso'],
- [['leite','desnatado'],35,'Leite desnatado'],
- [['leite'],61,'Leite integral'],
- [['iogurte','desnatado'],41,'Iogurte natural desnatado'],
- [['iogurte'],51,'Iogurte natural'],
- [['arroz','integral'],124,'Arroz integral cozido'],
- [['arroz'],128,'Arroz tipo 1 cozido'],
- [['feijao','preto'],77,'Feijão preto cozido'],
- [['feijao'],76,'Feijão carioca cozido'],
- [['batata','doce'],77,'Batata-doce cozida'],
- [['batata'],52,'Batata inglesa cozida'],
- [['mandioca'],125,'Mandioca cozida'],
- [['cuscuz'],113,'Cuscuz de milho cozido'],
- [['aveia'],394,'Aveia em flocos'],
- [['pao','frances'],300,'Pão francês',50],
- [['ovo','frito'],240,'Ovo frito',50],
- [['ovo'],146,'Ovo cozido',50],
- [['frango'],159,'Peito de frango sem pele grelhado'],
- [['carne','moida'],212,'Carne moída (acém) cozida'],
- [['patinho'],219,'Patinho grelhado'],
- [['carne'],194,'Carne bovina magra cozida'],
- [['atum'],166,'Atum em conserva'],
- [['banana'],98,'Banana prata'],
- [['maca'],56,'Maçã com casca'],
- [['mamao'],40,'Mamão papaia'],
- [['laranja'],37,'Laranja pera'],
- [['queijo','minas'],264,'Queijo minas frescal'],
- [['mussarela'],330,'Queijo mussarela'],
- [['requeijao'],257,'Requeijão cremoso'],
- [['azeite'],884,'Azeite de oliva'],
- [['manteiga'],726,'Manteiga'],
- [['cafe'],9,'Café (infusão)'],
-];
-const words=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().split(' ').filter(Boolean);
-const has=(list,key)=>list.some(w=>w===key||w===key+'s'||w===key+'es');
-
-// Sugestão para uma opção. Combinações ("arroz + feijão", "atum ou tilápia", "café com leite") ficam sem sugestão:
-// não dá pra saber a proporção, e o Emanuel preenche.
+// As calorias salvas nos planos continuam sob revisão do profissional.
+import {tacoCalories} from './taco-calories.js';
+const key=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const byName=new Map(tacoCalories.map(([name,kcal])=>[key(name),{name,kcal}]));
 export function sugerirKcal(descricao,quantidade,unidade,banco=[]){
- const q=Number(quantidade);if(!descricao||!(q>0))return null;
- const food=banco.find(f=>f.nome===descricao&&Number(f.kcal)>0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
- if(food)return {kcal:Math.round(Number(food.kcal)*q/Number(food.quantidade_padrao)),fonte:'banco',ref:food.nome};
- if(/\+|\bou\b|\bcom\b/i.test(String(descricao).normalize('NFD').replace(/[̀-ͯ]/g,'')))return null;
- const w=words(descricao),hit=TACO.find(([keys])=>keys.every(k=>has(w,k)));if(!hit)return null;
- const [, per100,ref,porUnidade]=hit;
- const grams=unidade==='g'||unidade==='ml'?q:unidade==='unidade'&&porUnidade?q*porUnidade:null;
- return grams?{kcal:Math.round(per100*grams/100),fonte:'TACO',ref}:null;
+ const q=Number(quantidade);if(!descricao||!Number.isFinite(q)||q<=0)return null;
+ const food=banco.find(f=>f.nome===descricao&&f.kcal!=null&&f.kcal!==''&&Number.isFinite(Number(f.kcal))&&Number(f.kcal)>=0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
+ if(food)return {kcal:Math.round(Number(food.kcal)*q/Number(food.quantidade_padrao)),fonte:food.fonte||'banco',ref:food.nome};
+ const hit=byName.get(key(descricao));
+ // A TACO é por massa. Não inferir densidade nem peso de unidades/porções.
+ if(!hit||unidade!=='g'||typeof hit.kcal!=='number')return null;
+ return {kcal:Math.round(hit.kcal*q/100),fonte:'TACO',ref:hit.name};
 }
 
 const value=o=>o.kcal===''||o.kcal==null||!Number.isFinite(Number(o.kcal))?null:Number(o.kcal);

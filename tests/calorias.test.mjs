@@ -5,13 +5,12 @@ import {PGlite} from '@electric-sql/pglite';
 import {sugerirKcal,mealKcal,planKcal,eatenKcal,kcalText} from '../assets/js/calorias.js';
 
 test('sugestão pela TACO só quando dá pra calcular com segurança',()=>{
- assert.equal(sugerirKcal('Arroz branco cozido',150,'g').kcal,192);
- assert.equal(sugerirKcal('Batata-doce cozida',200,'g').kcal,154);
- assert.equal(sugerirKcal('Ovos inteiros',3,'unidade').kcal,219);
- assert.equal(sugerirKcal('Doce de leite',15,'g').ref,'Doce de leite cremoso','o mais específico vem antes de "leite"');
- assert.equal(sugerirKcal('Leite',150,'ml').kcal,92);
- assert.equal(sugerirKcal('Macarrão cozido',120,'g'),null,'macarrão não é confundido com maçã');
- assert.equal(sugerirKcal('Maçã',130,'g').kcal,73);
+ assert.equal(sugerirKcal('Arroz, tipo 1, cozido',150,'g').kcal,192);
+ assert.equal(sugerirKcal('Arroz, tipo 1, cru',100,'g').kcal,358);
+ assert.equal(sugerirKcal('Ovos inteiros',3,'unidade'),null);
+ assert.equal(sugerirKcal('Leite',150,'ml'),null);
+ assert.equal(sugerirKcal('Arroz',100,'g'),null,'nome genérico não presume preparo');
+ assert.equal(sugerirKcal('Macarrão cozido',120,'g'),null);
  for(const combo of ['Arroz cozido + feijão','Peixe (atum ou tilápia)','Café com leite'])assert.equal(sugerirKcal(combo,100,'g'),null,combo);
  assert.equal(sugerirKcal('Banana',1,'unidade'),null,'sem peso médio definido, não chuta');
  assert.equal(sugerirKcal('Salada',null,'a gosto'),null);
