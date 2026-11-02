@@ -2,7 +2,40 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
-import {sugerirKcal,mealKcal,planKcal,eatenKcal,kcalText} from '../assets/js/calorias.js';
+import {sugerirKcal,mealKcal,planKcal,eatenKcal,kcalText,pesoReferencia,pesoImplicito,pesoInicial,precisaPeso} from '../assets/js/calorias.js';
+test('kcal em unidades e medidas usa o peso de 1 medida',()=>{
+ const ovo='Ovo, de galinha, inteiro, cru',arroz='Arroz, tipo 1, cozido';
+ assert.equal(sugerirKcal(ovo,100,'g').kcal,143);
+ assert.equal(sugerirKcal(ovo,3,'unidade').kcal,215,'3 ovos de 50 g, não 3 g');
+ assert.equal(sugerirKcal(ovo,3,'unidade',[],60).kcal,258,'o peso informado vale mais que o médio');
+ assert.equal(pesoReferencia(ovo,'unidade'),50);
+ assert.equal(pesoReferencia(ovo,'fatia'),null);
+ assert.equal(pesoReferencia('Ovo, de galinha, clara, cozida/10minutos','unidade'),null);
+ assert.equal(sugerirKcal(arroz,2,'colher de sopa'),null,'sem peso informado não chuta');
+ assert.equal(sugerirKcal(arroz,2,'colher de sopa',[],25).kcal,64);
+ assert.equal(sugerirKcal(arroz,1,'a gosto',[],25),null);
+ assert.equal(precisaPeso(arroz,'fatia'),true);
+ assert.equal(precisaPeso(arroz,'g'),false);
+ assert.equal(precisaPeso('Ovos inteiros','unidade'),false,'texto livre não tem referência na TACO');
+ assert.equal(precisaPeso(arroz,'fatia',[{nome:arroz,unidade:'fatia',quantidade_padrao:1,kcal:90}]),false,'o banco do Emanuel já resolve');
+ assert.equal(sugerirKcal(arroz,2,'fatia',[{nome:arroz,unidade:'fatia',quantidade_padrao:1,kcal:90}]).kcal,180);
+});
+test('plano reaberto recupera o peso pela kcal gravada',()=>{
+ const ovo='Ovo, de galinha, inteiro, cru';
+ assert.equal(pesoImplicito(ovo,3,'unidade',215),50);
+ assert.equal(sugerirKcal(ovo,2,'unidade',[],pesoImplicito(ovo,3,'unidade',215)).kcal,143);
+ assert.equal(pesoImplicito(ovo,3,'g',215),null,'em gramas não existe peso de medida');
+ assert.equal(pesoImplicito('Ovos inteiros',3,'unidade',215),null);
+ assert.equal(pesoImplicito(ovo,3,'unidade',''),null);
+ assert.equal(pesoImplicito(ovo,1,'unidade',99999),null,'kcal absurda não vira peso');
+ assert.equal(pesoInicial(ovo,3,'unidade',''),50);
+ assert.equal(pesoInicial(ovo,3,'unidade',215),50);
+ assert.equal(pesoInicial(ovo,1,'unidade',86),60,'peso escolhido pelo Emanuel volta ao reabrir');
+ assert.equal(pesoInicial(ovo,3,'unidade',4),50,'4 kcal em 3 ovos é erro antigo, não ovo de 1 g');
+ assert.equal(sugerirKcal(ovo,3,'unidade',[],pesoInicial(ovo,3,'unidade',4)).kcal,215,'o editor mostra a diferença pra corrigir');
+ assert.equal(pesoInicial('Arroz, tipo 1, cozido',2,'colher de sopa',64),25);
+ assert.equal(pesoInicial('Arroz, tipo 1, cozido',2,'colher de sopa',''),null);
+});
 
 test('sugestão pela TACO só quando dá pra calcular com segurança',()=>{
  assert.equal(sugerirKcal('Arroz, tipo 1, cozido',150,'g').kcal,192);

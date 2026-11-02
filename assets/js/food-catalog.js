@@ -2,9 +2,11 @@ import {TACO} from './taco-data.js';
 import {escapeHTML as e} from './domain.js';
 export {TACO};
 export const normalizeFood=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+// A TACO chama o arroz branco de "tipo 1" e "tipo 2". O nome oficial fica; o do dia a dia só ajuda a achar.
+export const foodAlias=f=>/^Arroz, tipo [12],/.test(f.nome)?'Arroz branco':'';
 export function filterFoods(query='',category=''){
  const terms=normalizeFood(query).split(/\s+/).filter(Boolean);
- return TACO.filter(f=>(!category||f.categoria===category)&&terms.every(t=>normalizeFood(f.nome).includes(t)));
+ return TACO.filter(f=>{const text=normalizeFood(f.nome+' '+foodAlias(f));return (!category||f.categoria===category)&&terms.every(t=>text.includes(t));});
 }
 const fmt=v=>v==null?'Não informado':typeof v==='number'?v.toLocaleString('pt-BR',{maximumFractionDigits:2}):v;
 export function tacoBrowser(host){
@@ -15,7 +17,7 @@ export function tacoBrowser(host){
  const rows=filterFoods(q('[data-taco-search]').value,q('[data-taco-category]').value),pages=Math.max(1,Math.ceil(rows.length/20));
  page=Math.min(page,pages-1);
  q('[data-taco-count]').textContent=`${rows.length} alimentos encontrados`;
- q('[data-taco-results]').innerHTML=rows.slice(page*20,page*20+20).map(f=>`<details style="padding:16px 0;border-top:1px solid var(--border)"><summary><strong>${e(f.nome)}</strong> <small>· ${e(fmt(f.kcal))} kcal / 100 g</small></summary><p>${e(f.categoria)} · TACO #${f.numero}</p><dl class="form-grid">${Object.entries({kcal:'Energia (kcal)',proteina:'Proteínas (g)',carboidratos:'Carboidratos (g)',lipideos:'Lipídeos (g)',fibra:'Fibra alimentar (g)',sodio:'Sódio (mg)',calcio:'Cálcio (mg)',ferro:'Ferro (mg)',potassio:'Potássio (mg)',colesterol:'Colesterol (mg)',magnesio:'Magnésio (mg)',fosforo:'Fósforo (mg)',zinco:'Zinco (mg)',vitamina_c:'Vitamina C (mg)'}).map(([key,label])=>`<div><dt>${label}</dt><dd style="margin:4px 0">${e(fmt(f[key]))}</dd></div>`).join('')}</dl></details>`).join('')||'<p>Nenhum alimento encontrado. Tente outro termo ou categoria.</p>';
+ q('[data-taco-results]').innerHTML=rows.slice(page*20,page*20+20).map(f=>`<details style="padding:16px 0;border-top:1px solid var(--border)"><summary><strong>${e(f.nome)}</strong> <small>${foodAlias(f)?`· ${e(foodAlias(f))} `:''}· ${e(fmt(f.kcal))} kcal / 100 g</small></summary><p>${e(f.categoria)} · TACO #${f.numero}</p><dl class="form-grid">${Object.entries({kcal:'Energia (kcal)',proteina:'Proteínas (g)',carboidratos:'Carboidratos (g)',lipideos:'Lipídeos (g)',fibra:'Fibra alimentar (g)',sodio:'Sódio (mg)',calcio:'Cálcio (mg)',ferro:'Ferro (mg)',potassio:'Potássio (mg)',colesterol:'Colesterol (mg)',magnesio:'Magnésio (mg)',fosforo:'Fósforo (mg)',zinco:'Zinco (mg)',vitamina_c:'Vitamina C (mg)'}).map(([key,label])=>`<div><dt>${label}</dt><dd style="margin:4px 0">${e(fmt(f[key]))}</dd></div>`).join('')}</dl></details>`).join('')||'<p>Nenhum alimento encontrado. Tente outro termo ou categoria.</p>';
  q('[data-taco-page]').textContent=`${page+1} / ${pages}`;
  q('[data-taco-prev]').disabled=page===0;q('[data-taco-next]').disabled=page===pages-1;
  };

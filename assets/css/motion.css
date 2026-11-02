@@ -2,8 +2,8 @@
 :root{--motion-ease:cubic-bezier(.2,.7,.2,1)}
 html{scroll-behavior:smooth;scroll-padding-bottom:110px}
 @view-transition{navigation:auto}
-::view-transition-old(root){animation:page-out 220ms ease-out both}
-::view-transition-new(root){animation:page-in 420ms var(--motion-ease) both}
+::view-transition-old(root){animation:page-out 90ms ease-out both}
+::view-transition-new(root){animation:page-in 160ms var(--motion-ease) both}
 @keyframes page-out{to{opacity:0}}
 @keyframes page-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .button,.quick-records a,.floating-nav a,.rail-link,.tabs button{transition:background-color .18s,color .18s,box-shadow .18s,transform .18s var(--motion-ease)}

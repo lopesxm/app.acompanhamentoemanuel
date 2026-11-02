@@ -2,14 +2,35 @@
 import {tacoCalories} from './taco-calories.js';
 const key=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const byName=new Map(tacoCalories.map(([name,kcal])=>[key(name),{name,kcal}]));
-export function sugerirKcal(descricao,quantidade,unidade,banco=[]){
+const MEDIDAS=new Set(['unidade','colher de sopa','fatia','porção','ml']);
+const fromBank=(descricao,unidade,banco)=>banco.find(f=>f.nome===descricao&&f.kcal!=null&&f.kcal!==''&&Number.isFinite(Number(f.kcal))&&Number(f.kcal)>=0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
+const tacoHit=descricao=>{const hit=byName.get(key(descricao));return typeof hit?.kcal==='number'?hit:null;};
+// Peso médio só onde a medida é bem padronizada. Nos outros casos quem informa é o Emanuel, na linha do alimento.
+export function pesoReferencia(descricao,unidade){return unidade==='unidade'&&/^ovo de galinha inteiro\b/.test(key(descricao))?50:null;}
+// A TACO é por 100 g: fora de gramas, a conta só existe com o peso de 1 medida.
+export const precisaPeso=(descricao,unidade,banco=[])=>MEDIDAS.has(unidade)&&Boolean(tacoHit(descricao))&&!fromBank(descricao,unidade,banco);
+export function sugerirKcal(descricao,quantidade,unidade,banco=[],pesoUnidade=null){
  const q=Number(quantidade);if(!descricao||!Number.isFinite(q)||q<=0)return null;
- const food=banco.find(f=>f.nome===descricao&&f.kcal!=null&&f.kcal!==''&&Number.isFinite(Number(f.kcal))&&Number(f.kcal)>=0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
+ const food=fromBank(descricao,unidade,banco);
  if(food)return {kcal:Math.round(Number(food.kcal)*q/Number(food.quantidade_padrao)),fonte:food.fonte||'banco',ref:food.nome};
- const hit=byName.get(key(descricao));
- // A TACO é por massa. Não inferir densidade nem peso de unidades/porções.
- if(!hit||unidade!=='g'||typeof hit.kcal!=='number')return null;
- return {kcal:Math.round(hit.kcal*q/100),fonte:'TACO',ref:hit.name};
+ const hit=tacoHit(descricao);if(!hit)return null;
+ if(unidade==='g')return {kcal:Math.round(hit.kcal*q/100),fonte:'TACO',ref:hit.name};
+ if(!MEDIDAS.has(unidade))return null;
+ const peso=Number(pesoUnidade)>0?Number(pesoUnidade):pesoReferencia(descricao,unidade);
+ return peso?{kcal:Math.round(hit.kcal*q*peso/100),fonte:'TACO',ref:hit.name,peso}:null;
+}
+// O peso não é salvo no plano: ao reabrir, sai da kcal já gravada, pra quantidade continuar recalculando certo.
+export function pesoImplicito(descricao,quantidade,unidade,kcal){
+ const q=Number(quantidade),k=Number(kcal),hit=tacoHit(descricao);
+ if(!hit||!MEDIDAS.has(unidade)||!(q>0)||!(k>0)||!(hit.kcal>0))return null;
+ const peso=k*100/(q*hit.kcal);
+ return peso>2000||peso<.5?null:peso>=10?Math.round(peso):Math.round(peso*10)/10;
+}
+// Kcal que destoa demais do peso médio é erro antigo (ex.: 4 kcal em 3 ovos): não vira peso, e o editor avisa da diferença.
+export function pesoInicial(descricao,quantidade,unidade,kcal){
+ const ref=pesoReferencia(descricao,unidade),implied=pesoImplicito(descricao,quantidade,unidade,kcal);
+ if(implied==null)return ref;
+ return ref&&(implied<ref*.5||implied>ref*1.5)?ref:implied;
 }
 
 const value=o=>o.kcal===''||o.kcal==null||!Number.isFinite(Number(o.kcal))?null:Number(o.kcal);
