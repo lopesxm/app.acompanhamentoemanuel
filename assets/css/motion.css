@@ -72,3 +72,9 @@ img{max-width:100%}
 .timeline article>p{font-size:13px;line-height:1.5;margin:0 0 6px}
 .timeline article .notice{margin:12px 0 0}
 @media(prefers-reduced-motion:reduce){.sidebar{transition:none!important}}
+/* Abertura: o texto de espera só aparece se demorar de verdade; enquanto os dados chegam, um cartão ocupa o lugar do conteúdo. */
+.loading{animation:loading-late .15s .7s both}
+@keyframes loading-late{from{opacity:0}to{opacity:1}}
+#content:empty{min-height:260px;border:1px solid var(--cor-borda);border-radius:14px;background:var(--cor-fundo);animation:content-wait 1.2s ease-in-out infinite alternate}
+@keyframes content-wait{from{opacity:.35}to{opacity:.75}}
+@media(prefers-reduced-motion:reduce){.loading{animation:none}#content:empty{animation:none;opacity:.5}}

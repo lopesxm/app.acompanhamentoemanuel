@@ -8,15 +8,26 @@ export const configured=()=>Boolean(config.url&&config.anonKey);
 let client;
 export async function supabase(){if(!client){if(!configured())throw Error('O serviço está indisponível. Entre em contato com o responsável.');const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm');client=createClient(config.url,config.anonKey,{global:{fetch:(url,options={})=>{const headers=new Headers(options.headers);let view=location.pathname.startsWith('/admin/')?'admin':location.pathname.startsWith('/app/')?'cliente':sessionStorage.getItem('grinders-dev-view')||'cliente';headers.set('x-grinders-view',view);return fetch(url,{...options,headers});}}});}return client;}
 function unwrap({data,error}){if(error)throw Error(error.message);return data;}
-// A visão de desenvolvimento depende da área (/admin ou /app), então o perfil guardado é por área.
-const profileKey=()=>{const area=location.pathname.split('/')[1];return area==='admin'||area==='app'?'perfil:'+area:null;};
-const forgetProfile=()=>{for(const area of ['admin','app'])sessionStorage.removeItem('perfil:'+area);};
+// O app guarda perfil e cadastro neste aparelho pra desenhar a tela sem esperar rede nem carregar o Supabase.
+// É só pra interface: quem protege os dados é o RLS, e a conferência roda em segundo plano. A visão de desenvolvimento depende da área, por isso o perfil é por área.
+const AUTH_KEY=`sb-${String(config.url).replace(/^https?:\/\//,'').split('.')[0]}-auth-token`,RECHECK_MS=5*60*1000;
+const readSaved=k=>{try{return JSON.parse(localStorage.getItem(k));}catch{return null;}};
+const writeSaved=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+const appArea=()=>{const area=location.pathname.split('/')[1];return area==='admin'||area==='app'?area:null;};
+function forgetProfile(){try{for(const k of Object.keys(localStorage))if(k.startsWith('perfil:')||k.startsWith('cliente:'))localStorage.removeItem(k);}catch{}}
+// Confere depois que a tela já abriu, no máximo a cada 5 minutos. Se mudou, esquece o guardado e recarrega.
+function recheck(key,saved,value,load){if(Date.now()-(saved.conferido||0)<RECHECK_MS)return;setTimeout(async()=>{try{const fresh=await load();if(JSON.stringify(fresh)===JSON.stringify(value)){writeSaved(key,{...saved,conferido:Date.now()});return;}forgetProfile();location.reload();}catch{/* Sem rede: tenta de novo na próxima tela. */}},1500);}
 async function fetchProfile(sb){const {data:{user},error}=await sb.auth.getUser();if(!user){if(error&&!(error.status>=400&&error.status<500))throw error;return null;}const [context,own]=await Promise.all([sb.rpc('contexto_desenvolvimento'),sb.from('perfis').select('*').eq('id',user.id).maybeSingle()]);if(!context.error&&context.data?.permitido)return {...context.data.perfil,desenvolvedor:true,executor_id:context.data.executor_id};return unwrap(own);}
-let profileChecked=false;
-// O perfil quase nunca muda: a tela abre com o último conhecido e confere no banco em segundo plano. Quem protege os dados é o RLS, não esta leitura.
-export async function profile(){if(isDemo()){const db=demoDB();return db.perfis.find(p=>p.papel===sessionStorage.getItem('demo-role'));}const sb=await supabase();const {data:{session}}=await sb.auth.getSession();if(!session){forgetProfile();return null;}const key=profileKey();let saved=null;if(key){try{saved=JSON.parse(sessionStorage.getItem(key));}catch{}}
- if(saved?.uid===session.user.id&&saved.perfil){if(!profileChecked){profileChecked=true;fetchProfile(sb).then(p=>{if(JSON.stringify(p)!==JSON.stringify(saved.perfil)){forgetProfile();location.reload();}}).catch(()=>{});}return saved.perfil;}
- const p=await fetchProfile(sb);if(p&&key)sessionStorage.setItem(key,JSON.stringify({uid:session.user.id,perfil:p}));return p;}
+export async function profile(){if(isDemo()){const db=demoDB();return db.perfis.find(p=>p.papel===sessionStorage.getItem('demo-role'));}
+ const area=appArea(),key=area?'perfil:'+area:null,uid=readSaved(AUTH_KEY)?.user?.id,saved=key?readSaved(key):null;
+ if(uid&&saved?.uid===uid&&saved.perfil){recheck(key,saved,saved.perfil,async()=>fetchProfile(await supabase()));return saved.perfil;}
+ const sb=await supabase();const {data:{session}}=await sb.auth.getSession();if(!session){forgetProfile();return null;}
+ const p=await fetchProfile(sb);const target=key||(p&&!p.desenvolvedor?'perfil:'+(p.papel==='admin'?'admin':'app'):null);if(p&&target)writeSaved(target,{uid:session.user.id,perfil:p,conferido:Date.now()});return p;}
+// Cadastro do cliente logado, pelo mesmo caminho: a tela não precisa esperar essa consulta pra aparecer.
+export async function clienteAtual(p){
+ const key='cliente:'+p.id,saved=readSaved(key),load=async()=>(await list('clientes',{usuario_id:p.id}))[0]||null;
+ if(saved?.row){recheck(key,saved,saved.row,load);return saved.row;}
+ const row=await load();if(row)writeSaved(key,{row,conferido:Date.now()});return row;}
 export async function list(table,filters={}){if(isDemo()){let rows=demoDB()[table]||[];return structuredClone(rows.filter(r=>Object.entries(filters).every(([k,v])=>r[k]===v)));}let query=(await supabase()).from(table).select(table==='planos'?'*,refeicoes(*,grupos(*,opcoes(*)))':'*');for(const [k,v] of Object.entries(filters))query=query.eq(k,v);return unwrap(await query);}
 export async function save(table,value,conflict='id'){if(isDemo()){const db=demoDB();const keys=conflict.split(',');let row=db[table].find(r=>keys.every(k=>value[k]!==undefined&&r[k]===value[k]));if(row)Object.assign(row,value);else{row={id:crypto.randomUUID(),criado_em:new Date().toISOString(),...value};db[table].push(row);demoNotify(db,table,row);}demoSave(db);return structuredClone(row);}return unwrap(await (await supabase()).from(table).upsert(value,{onConflict:conflict}).select().single());}
 export async function remove(table,id){if(isDemo()){const db=demoDB();const uid=table==='clientes'?db.clientes.find(c=>c.id===id)?.usuario_id:null;db[table]=db[table].filter(x=>x.id!==id);if(table==='clientes'){for(const key of Object.keys(db))db[key]=db[key].filter(x=>x.cliente_id!==id&&x.seguidor_id!==id&&x.seguido_id!==id&&(!uid||(x.autor_id!==uid&&x.perfil_id!==uid)));}demoSave(db);return;}unwrap(await (await supabase()).from(table).delete().eq('id',id));}
