@@ -1,5 +1,5 @@
 // Entrada suave uma vez por conteúdo; sem animar de novo cartões recriados.
-export function initMotion(){
+export function initMotion(signal){
  const reduce=matchMedia('(prefers-reduced-motion: reduce)'),seen=new Set(),watched=new WeakSet();
  const selector='#content > .card, #content > .week-strip, #content > .quick-records, #content > .section-heading, #content > .notice, .post, .timeline article';
  const key=el=>el.dataset.post||el.dataset.meal||el.dataset.event||el.className+'|'+(el.querySelector('h2,h3')?.textContent||el.textContent.slice(0,65));
@@ -9,5 +9,5 @@ export function initMotion(){
  const observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)scan(node);});
  observer.observe(content,{childList:true,subtree:true});scan(content);
  reduce.addEventListener('change',()=>{if(reduce.matches)content.getAnimations({subtree:true}).forEach(a=>a.cancel());});
- addEventListener('pagehide',()=>{observer.disconnect();visible.disconnect();},{once:true});
+ const stop=()=>{observer.disconnect();visible.disconnect();};addEventListener('pagehide',stop,{once:true,signal});signal?.addEventListener('abort',stop,{once:true});
 }

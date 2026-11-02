@@ -1,10 +1,11 @@
 import {icon} from './visuals.js';
 import {escapeHTML as e} from './domain.js';
 import {list,rpc} from './supabase.js';
+import {go} from './rotas.js';
 // Sininho: os avisos são criados pelo banco (007_notificacoes.sql). Atualiza a cada minuto e quando a aba volta pro foco.
 export const notifButton=()=>'<button type="button" class="button ghost notif-toggle" data-notif aria-label="Notificações" aria-haspopup="dialog">'+icon('bell')+'<span class="notif-count" hidden></span></button>';
 const icons={registro:'plate',foto:'camera',fuga:'chat',medidas:'scale',arquivo:'folder',ficha:'plan',comentario:'chat',resposta:'chat',plano:'plate',post:'people',comentario_post:'chat'};
-let rows=[],me=null,timer;
+let rows=[],me=null,timer,watching=false;
 function ago(date){
  const min=Math.round((Date.now()-new Date(date))/60000);
  if(min<1)return 'agora';if(min<60)return `há ${min} min`;
@@ -35,7 +36,7 @@ async function open(modal){
   try{
    await rpc('marcar_notificacoes_lidas',{ids:[a.dataset.notification]});
    const row=rows.find(x=>x.id===a.dataset.notification);if(row)row.lida_em=new Date().toISOString();paint();
-   const to=new URL(a.href);if(to.pathname===location.pathname&&to.search===location.search){location.hash=to.hash;location.reload();}else location.href=to.href;
+   const to=new URL(a.href);if(to.pathname===location.pathname&&to.search===location.search){location.hash=to.hash;location.reload();}else{d.close();go(to.href);}
   }catch{
    let error=d.querySelector('[data-notif-error]');if(!error){error=document.createElement('p');error.dataset.notifError='';error.setAttribute('role','alert');d.append(error);}error.textContent='Não foi possível abrir a notificação. Tente novamente.';
   }finally{a.removeAttribute('aria-busy');}
@@ -46,5 +47,5 @@ export function bindNotifications(p,modal){
  document.querySelectorAll('[data-notif]').forEach(b=>b.addEventListener('click',()=>open(modal)));
  refresh();
  clearInterval(timer);timer=setInterval(()=>{if(document.visibilityState==='visible')refresh();},60000);
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});
+ if(!watching){watching=true;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});}
 }

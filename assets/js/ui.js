@@ -1,5 +1,6 @@
 import {brandLink,brandArt} from './brand.js';
 import {initMotion} from './motion.js';
+import {installRouter} from './rotas.js';
 import {icon,heroArt} from './visuals.js';
 import {escapeHTML as e} from './domain.js';
 import {isDemo,signOut,rpc,signedUrl} from './supabase.js';
@@ -20,7 +21,10 @@ export function bindThemeToggles(root=document){
  $$('[data-theme-toggle]',root).forEach(b=>b.onclick=()=>{const t=document.documentElement.dataset.theme==='escuro'?'claro':'escuro';document.documentElement.dataset.theme=t;try{localStorage.setItem('tema',t);}catch{}paint();});
  paint();
 }
+let shellScope;
 export function shell(p,title,subtitle='',action='') {
+ // Cada tela nova desliga os ouvintes da anterior.
+ shellScope?.abort();shellScope=new AbortController();const {signal}=shellScope;document.body.classList.remove('menu-open');installRouter();
  const admin=p.papel==='admin';
  const links=admin?[['index','dashboard','Visão geral'],['clientes','people','Clientes'],['alimentos','leaf','Banco de alimentos'],['modelos','folder','Modelos'],['comunidade','chat','Comunidade']]:[['hoje','home','Início'],['plano','plate','Meu plano'],['registrar','record','Registrar'],['evolucao','chart','Minha evolução'],['comunidade','people','Society']];
  const current=location.pathname.split('/').pop().replace('.html','');
@@ -46,8 +50,8 @@ export function shell(p,title,subtitle='',action='') {
   else{sidebar.removeAttribute('role');sidebar.removeAttribute('aria-modal');sidebar.removeAttribute('aria-label');if(restoreFocus)trigger.focus();}
  }
  trigger.onclick=()=>toggleMenu(true);$('#close-menu').onclick=()=>toggleMenu(false);shade.onclick=()=>toggleMenu(false);
- mobile.addEventListener('change',()=>toggleMenu(false,false));
- document.addEventListener('keydown',ev=>{if(!document.body.classList.contains('menu-open'))return;if(ev.key==='Escape'){ev.preventDefault();toggleMenu(false);}if(ev.key==='Tab'){const els=[...sidebar.querySelectorAll('a,button')],first=els[0],last=els.at(-1);if(!sidebar.contains(document.activeElement)){ev.preventDefault();first.focus();}else if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}}});
+ mobile.addEventListener('change',()=>toggleMenu(false,false),{signal});
+ document.addEventListener('keydown',ev=>{if(!document.body.classList.contains('menu-open'))return;if(ev.key==='Escape'){ev.preventDefault();toggleMenu(false);}if(ev.key==='Tab'){const els=[...sidebar.querySelectorAll('a,button')],first=els[0],last=els.at(-1);if(!sidebar.contains(document.activeElement)){ev.preventDefault();first.focus();}else if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}}},{signal});
  const refreshProfile=()=>rpc('visual_perfil',{}).then(async v=>{
   if(!v)return;
   const name=$('[data-shell-name]');if(name)name.textContent=v.nome.split(' ')[0];
@@ -59,8 +63,8 @@ export function shell(p,title,subtitle='',action='') {
    else{replacement.textContent=v.nome.trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('');old.replaceWith(replacement);}
   });
  }).catch(()=>{});
- void refreshProfile();document.addEventListener('profile-updated',refreshProfile);
- initMotion();
+ void refreshProfile();document.addEventListener('profile-updated',refreshProfile,{signal});
+ initMotion(signal);
  return $('#content');
 }
 export function person(c){return `<div class="person"><span class="avatar">${e(c.nome.split(' ').map(x=>x[0]).slice(0,2).join(''))}</span><div><strong>${e(c.nome)}</strong><br><small>${e(c.email||'Ainda não aceitou o convite')}</small></div></div>`;}
