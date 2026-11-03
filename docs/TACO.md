@@ -18,3 +18,12 @@ node --test tests/taco.test.mjs
 ```
 
 O importador exige os 597 códigos e registra o SHA256 da planilha no arquivo gerado. Mudanças de edição exigem revisão do importador e dos testes.
+
+## Suplementos
+
+A TACO não tem suplementos. Whey, creatina e outros ficam em `assets/js/suplementos.js`, separados da tabela oficial, e entram na busca, na kcal e nos nutrientes do editor junto com ela. A origem de cada item fica no campo `origem`:
+
+- Mediana de rótulos do USDA FoodData Central (produtos de marca), mediana de rótulos do Open Food Facts ou registro do USDA FoodData Central.
+- Beta-alanina, cafeína e multivitamínico não têm base consultada: entram sem energia relevante na dose e sem micronutrientes, porque dependem da marca.
+
+Valores mudam por marca e sabor, então são ponto de partida. Campo `null` é "sem dado" e nunca vira zero. A porção (`porcao_g`) é a quantidade inicial no editor e não é recomendação de dose. Marca específica deve ser cadastrada em Alimentos personalizados, com os valores do rótulo.

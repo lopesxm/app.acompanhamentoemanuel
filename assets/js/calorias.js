@@ -1,14 +1,15 @@
 // As calorias salvas nos planos continuam sob revisão do profissional.
 import {tacoCalories} from './taco-calories.js';
+import {SUPLEMENTOS} from './suplementos.js';
 const key=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-const byName=new Map(tacoCalories.map(([name,kcal])=>[key(name),{name,kcal}]));
+const byName=new Map([...tacoCalories.map(([name,kcal])=>[key(name),{name,kcal,fonte:'TACO'}]),...SUPLEMENTOS.map(f=>[key(f.nome),{name:f.nome,kcal:f.kcal,fonte:f.fonte,porcao:f.porcao_g}])]);
 // "Arroz branco, tipo 1" é o nome de tela do "Arroz, tipo 1" da TACO.
 export const tacoKey=s=>key(s).replace(/^arroz branco tipo ([12])\b/,'arroz tipo $1');
 const MEDIDAS=new Set(['unidade','colher de sopa','fatia','porção','ml']);
 const fromBank=(descricao,unidade,banco)=>banco.find(f=>f.nome===descricao&&f.kcal!=null&&f.kcal!==''&&Number.isFinite(Number(f.kcal))&&Number(f.kcal)>=0&&f.unidade===unidade&&Number(f.quantidade_padrao)>0);
 const tacoHit=descricao=>{const hit=byName.get(tacoKey(descricao));return typeof hit?.kcal==='number'?hit:null;};
 // Peso médio só onde a medida é bem padronizada. Nos outros casos quem informa é o Emanuel, na linha do alimento.
-export function pesoReferencia(descricao,unidade){return unidade==='unidade'&&/^ovo de galinha inteiro\b/.test(key(descricao))?50:null;}
+export function pesoReferencia(descricao,unidade){if(unidade==='porção')return byName.get(key(descricao))?.porcao??null;return unidade==='unidade'&&/^ovo de galinha inteiro\b/.test(key(descricao))?50:null;}
 // A TACO é por 100 g: fora de gramas, a conta só existe com o peso de 1 medida.
 export const precisaPeso=(descricao,unidade,banco=[])=>MEDIDAS.has(unidade)&&Boolean(tacoHit(descricao))&&!fromBank(descricao,unidade,banco);
 export function sugerirKcal(descricao,quantidade,unidade,banco=[],pesoUnidade=null){
@@ -16,10 +17,10 @@ export function sugerirKcal(descricao,quantidade,unidade,banco=[],pesoUnidade=nu
  const food=fromBank(descricao,unidade,banco);
  if(food)return {kcal:Math.round(Number(food.kcal)*q/Number(food.quantidade_padrao)),fonte:food.fonte||'banco',ref:food.nome};
  const hit=tacoHit(descricao);if(!hit)return null;
- if(unidade==='g')return {kcal:Math.round(hit.kcal*q/100),fonte:'TACO',ref:hit.name};
+ if(unidade==='g')return {kcal:Math.round(hit.kcal*q/100),fonte:hit.fonte,ref:hit.name};
  if(!MEDIDAS.has(unidade))return null;
  const peso=Number(pesoUnidade)>0?Number(pesoUnidade):pesoReferencia(descricao,unidade);
- return peso?{kcal:Math.round(hit.kcal*q*peso/100),fonte:'TACO',ref:hit.name,peso}:null;
+ return peso?{kcal:Math.round(hit.kcal*q*peso/100),fonte:hit.fonte,ref:hit.name,peso}:null;
 }
 // O peso não é salvo no plano: ao reabrir, sai da kcal já gravada, pra quantidade continuar recalculando certo.
 export function pesoImplicito(descricao,quantidade,unidade,kcal){
