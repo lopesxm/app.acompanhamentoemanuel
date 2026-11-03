@@ -20,8 +20,9 @@ async function refresh(){
  try{rows=(await list('notificacoes',{destinatario_id:me.id})).sort((a,b)=>b.criado_em.localeCompare(a.criado_em)).slice(0,40);}catch{rows=[];}
  paint();
 }
+const plain=s=>String(s??'').replace(/\p{Extended_Pictographic}\uFE0F?/gu,'').trim();
 function item(x,fresh){
- return `<a data-notification="${e(x.id)}" class="notif-item ${fresh?'is-new':''}" href="${e(x.link)}"><span class="notif-icon">${icon(icons[x.tipo]||'bell')}</span><span class="notif-copy"><strong>${e(x.titulo)}</strong>${x.texto?`<span>${e(x.texto)}</span>`:''}<small>${ago(x.criado_em)}${fresh?' · nova':''}</small></span></a>`;
+ return `<a data-notification="${e(x.id)}" class="notif-item ${fresh?'is-new':''}" href="${e(x.link)}"><span class="notif-icon">${icon(icons[x.tipo]||'bell')}</span><span class="notif-copy"><strong>${e(plain(x.titulo))}</strong>${x.texto?`<span>${e(plain(x.texto))}</span>`:''}<small>${ago(x.criado_em)}${fresh?' · nova':''}</small></span></a>`;
 }
 async function open(modal){
  await refresh();

@@ -8,6 +8,14 @@ O início apresenta somente dados reais: refeições do plano ativo, último pes
 
 Níveis representam participação por pontos. Não são patentes e não certificam resultados físicos. Os pontos e os requisitos anteriores foram preservados; a identificação visual passa a usar número e nome do nível.
 
+## Início (`assets/js/home.js`, `assets/css/grinder.css`)
+
+- Em onboarding (ficha pendente, ficha enviada ou plano com início futuro): saudação, próximo passo, etapas do acompanhamento, guia recolhido, o que já está liberado e Society.
+- Com plano ativo: saudação, próximo passo com a refeição da vez, Seu dia, registros rápidos, consistência e peso, Society e Grinder Ranks.
+- O cartão de Grinder Ranks só aparece quando `visual_perfil` devolve `pontos`. Sem esse dado, não aparece nem vazio. A regra de pontos segue no banco (`010_pontos_grinder.sql`).
+- Peso não usa cor nem texto de "bom" ou "ruim": subir ou descer depende do objetivo.
+- Quando treino, água, hábitos ou desafios ganharem dados reais, entram em Seu dia, nos registros rápidos e na Society.
+
 ## Próximas etapas
 
 - Prescrição e histórico de treinos, com acesso profissional e registro de execução.

@@ -1,0 +1,257 @@
+/* Experiência do Grinder: tokens de destaque, Home e navegação inferior. Importado por último. */
+:root{
+ /* Dourado que preenche (botão, indicador, selecionado) sempre leva texto preto: 9:1 nos dois temas.
+    Texto em dourado continua em --cor-primaria, que no claro é fechado por contraste. */
+ --cor-destaque:var(--gs-gold);--cor-destaque-hover:#B39D76;--cor-sobre-destaque:var(--gs-black);
+ --cor-progresso:#8F7A55;--cor-trilha:#E6E1D9;--cor-bloco:#F6F4EF;
+ /* Grey da marca: 7:1 sobre o preto, mas 4:1 sobre o Charcoal. Usar só em fundo preto. */
+ --gs-grey-marca:#9A9A9A;
+ --raio-cartao:16px;--raio-bloco:12px;--nav-altura:64px;
+}
+:root[data-theme=escuro]{--cor-destaque-hover:var(--gs-gold-hover);--cor-progresso:var(--gs-gold);--cor-trilha:#2A2A2A;--cor-bloco:#2A2A2A}
+
+/* Botão principal e indicadores em todo o app. */
+.button:not(.secondary):not(.ghost):not(.danger){background:var(--cor-destaque);color:var(--cor-sobre-destaque);border-color:transparent}
+.button:not(.secondary):not(.ghost):not(.danger):hover{background:var(--cor-destaque-hover);color:var(--cor-sobre-destaque)}
+.button .ui-icon{flex-shrink:0;width:18px;height:18px}
+progress{accent-color:var(--cor-progresso)}
+.progress span,.kcal-bar>span{background:var(--cor-progresso)}
+.toast{border-radius:var(--raio-bloco)}
+.post-badge .ui-icon,.chip .ui-icon{width:16px;height:16px}
+
+/* Superfícies do Grinder. */
+[data-role=cliente] .card,[data-role=cliente] .meal,[data-role=cliente] .timeline article{border-radius:var(--raio-cartao)}
+.home-badge{display:inline-flex;align-items:center;min-height:24px;padding:3px 10px;border:1px solid var(--cor-borda);border-radius:999px;font-size:11px;font-weight:500;line-height:1.3;color:var(--cor-texto);white-space:nowrap}
+.home-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+[data-screen=hoje] .home-card-head h2{margin:0;font-size:16px;line-height:1.3}
+.week-bar{display:block;height:4px;border-radius:2px;background:var(--cor-trilha);overflow:hidden}
+.week-bar>i{display:block;height:100%;background:var(--cor-progresso);border-radius:2px}
+.week-bar.is-past>i{background:var(--cor-placeholder)}
+
+/* Saudação. O nome já aparece no cabeçalho e no menu: aqui entra a data de hoje. */
+[data-screen=hoje] .page-heading.home-greeting{margin-bottom:20px}
+.home-greeting .heading-copy{min-width:0}
+.home-greeting-date{display:block;margin-bottom:6px;font-size:12px;font-weight:500;line-height:1.5;color:var(--cor-placeholder)}
+[data-screen=hoje] .home-greeting h1{margin:0;max-width:none;font-size:clamp(32px,8vw,40px);font-weight:800;line-height:1.08;letter-spacing:-.04em;color:var(--cor-titulo)}
+[data-screen=hoje] .home-greeting .heading-copy>p{margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--cor-placeholder)}
+
+/* Próximo passo: o único cartão com o botão cheio logo na abertura. */
+[data-screen=hoje] .next-step-card{display:grid;gap:20px;padding:22px;margin:0 0 12px;border:1px solid var(--cor-borda);border-radius:20px;background:var(--cor-fundo);box-shadow:none}
+.next-step-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.next-step-icon{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border-radius:var(--raio-bloco);background:var(--cor-destaque);color:var(--cor-sobre-destaque)}
+.next-step-icon .ui-icon{width:22px;height:22px}
+.next-step-status{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:500;line-height:1.3;color:var(--cor-texto);text-align:right}
+.next-step-status i{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--cor-progresso)}
+.next-step-card.is-wait .next-step-status i{background:transparent;box-shadow:inset 0 0 0 2px var(--cor-progresso)}
+.next-step-eyebrow{display:block;margin-bottom:6px;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--cor-placeholder)}
+[data-screen=hoje] .next-step-card h2{margin:0;font-size:clamp(24px,6vw,28px);line-height:1.18;letter-spacing:-.03em;color:var(--cor-titulo);overflow-wrap:anywhere}
+.next-step-copy>p{margin:8px 0 0;max-width:52ch;font-size:14px;line-height:1.55;color:var(--cor-placeholder)}
+.next-step-detail{display:flex;align-items:center;gap:7px;margin-top:12px;font-size:13px;font-weight:500;color:var(--cor-texto)}
+.next-step-detail .ui-icon{width:16px;height:16px}
+.next-step-progress{display:grid;gap:6px;margin-top:14px;font-size:12px;color:var(--cor-texto)}
+.next-step-progress progress{width:100%;height:4px;appearance:none;border:0;border-radius:2px;overflow:hidden;background:var(--cor-trilha)}
+.next-step-progress progress::-webkit-progress-bar{background:var(--cor-trilha)}
+.next-step-progress progress::-webkit-progress-value{background:var(--cor-progresso)}
+.next-step-progress progress::-moz-progress-bar{background:var(--cor-progresso)}
+[data-screen=hoje] .next-step-card .next-step-button{display:flex;justify-content:space-between;gap:16px;width:100%;min-height:52px;margin:0;padding:13px 18px;border-radius:var(--raio-bloco);font-size:15px;line-height:1.3;text-align:left}
+
+/* A refeição da vez fica colada no próximo passo. */
+[data-screen=hoje] #content>.meal-list{margin-bottom:12px}
+[data-screen=hoje] #content>.card{margin-bottom:12px}
+.home-more-meals>summary,.home-note>summary{cursor:pointer;font-weight:600;font-size:14px}
+.home-more-meals .meal-list{margin:14px 0 0}
+
+/* Seu dia. */
+.home-day-main{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:16px}
+.home-ring{position:relative;width:76px;height:76px;flex-shrink:0}
+.home-ring svg{display:block;width:100%;height:100%;transform:rotate(-90deg)}
+.home-ring circle{fill:none;stroke:var(--cor-trilha);stroke-width:6}
+.home-ring .home-ring-value{stroke:var(--cor-progresso);stroke-linecap:round;stroke-dasharray:var(--p) 100;animation:home-ring-in .6s var(--motion-ease,ease-out)}
+.home-ring .home-ring-value[style*="--p:0"]{stroke:none}
+@keyframes home-ring-in{from{stroke-dasharray:0 100}}
+.home-ring>span{position:absolute;inset:0;display:grid;place-content:center;text-align:center;line-height:1.05}
+.home-ring strong{font-family:var(--fonte-titulo);font-size:22px;font-weight:700;color:var(--cor-titulo)}
+.home-ring small{font-size:11px;color:var(--cor-placeholder)}
+.home-day-copy{display:grid;gap:3px;min-width:0}
+.home-day-copy>strong{font-size:15px;line-height:1.35;color:var(--cor-titulo)}
+.home-day-copy>small{font-size:12px;color:var(--cor-placeholder)}
+.home-day-kcal{display:grid;gap:6px;margin-top:8px;font-size:12px;color:var(--cor-placeholder)}
+.home-day-kcal strong{color:var(--cor-titulo);font-size:13px}
+.home-day-meals{list-style:none;display:grid;margin:14px 0 -8px;padding:0}
+.home-day-meals li+li{border-top:1px solid var(--cor-borda)}
+.home-day-meals a{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:50px;padding:6px 0;color:var(--cor-titulo);text-decoration:none}
+.home-day-mark{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--cor-borda);font-size:13px;color:var(--cor-placeholder)}
+.home-day-mark .ui-icon{width:14px;height:14px}
+.home-day-meals a.is-comi .home-day-mark{background:var(--cor-destaque);border-color:transparent;color:var(--cor-sobre-destaque)}
+.home-day-name{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px;min-width:0}
+.home-day-name strong{font-size:14px;font-weight:500;overflow-wrap:anywhere}
+.home-day-name small,.home-day-state{font-size:12px;color:var(--cor-placeholder)}
+.home-day-meals a.is-pending .home-day-state{color:var(--cor-texto)}
+
+/* Registros rápidos. */
+.home-quick,.home-unlocked{margin:20px 0}
+.home-quick>h2,.home-unlocked>h2{margin:0 0 10px;font-size:16px;line-height:1.3}
+.home-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.home-quick-tile{display:flex;align-items:center;gap:10px;min-height:68px;padding:12px;border:1px solid var(--cor-borda);border-radius:var(--raio-cartao);background:var(--cor-fundo);color:var(--cor-titulo);text-decoration:none;min-width:0}
+.home-quick-tile>span:last-child,.home-unlocked-list a>span:nth-child(2){display:grid;gap:1px;min-width:0}
+.home-quick-tile strong,.home-unlocked-list strong{font-size:13px;font-weight:600;line-height:1.3}
+.home-quick-tile small,.home-unlocked-list small{font-size:11px;line-height:1.35;color:var(--cor-placeholder);overflow-wrap:anywhere}
+.home-quick-icon{position:relative;display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:10px;background:var(--cor-bloco);color:var(--cor-titulo)}
+.home-quick-icon .ui-icon{width:19px;height:19px}
+.home-quick-icon i{position:absolute;top:-2px;right:-2px;width:10px;height:10px;border-radius:50%;background:var(--cor-destaque);box-shadow:0 0 0 2px var(--cor-fundo)}
+
+/* Consistência e evolução: nenhuma cor diz se subir ou descer é bom. */
+.home-progress-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 12px}
+.home-progress-card.card{display:flex;flex-direction:column;min-width:0;margin:0;padding:20px}
+.home-progress-card header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+[data-screen=hoje] .home-progress-card header h2{margin:0;font-size:14px;font-weight:600;line-height:1.4;font-family:Inter,system-ui,sans-serif;letter-spacing:0;color:var(--cor-texto)}
+.progress-glyph{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:var(--cor-bloco);color:var(--cor-placeholder)}
+.progress-glyph .ui-icon{width:17px;height:17px}
+.progress-value{font-family:var(--fonte-titulo);font-size:38px;font-weight:700;line-height:1.1;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:var(--cor-titulo)}
+.progress-value>span{margin-left:8px;font-family:Inter,system-ui,sans-serif;font-size:13px;font-weight:400;letter-spacing:0;color:var(--cor-placeholder)}
+.progress-caption{margin:6px 0 14px;font-size:12px;line-height:1.5;color:var(--cor-placeholder)}
+.weight-trend{display:block;width:100%;height:44px;margin:0 0 12px;overflow:visible}
+.weight-trend polyline{fill:none;stroke:var(--cor-progresso);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.weight-trend circle{fill:var(--cor-progresso)}
+.weight-change{margin:0 0 4px;font-size:12px;line-height:1.5;color:var(--cor-texto)}
+.consistency-week{list-style:none;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:0 0 14px;padding:0}
+.consistency-week li{display:grid;justify-items:center;gap:5px;font-size:10px;color:var(--cor-placeholder)}
+.consistency-dot{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--cor-bloco);border:1.5px solid transparent;font-size:11px;font-variant-numeric:tabular-nums}
+.consistency-dot .ui-icon{width:15px;height:15px}
+.week-done .consistency-dot{background:var(--cor-destaque);color:var(--cor-sobre-destaque)}
+.week-pending .consistency-dot{background:transparent;border-color:var(--cor-progresso);color:var(--cor-titulo)}
+.week-future .consistency-dot{background:transparent;border-color:var(--cor-borda);opacity:.7}
+.week-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:14px}
+.week-compare>div{display:grid;gap:3px}
+.week-compare small{font-size:11px;color:var(--cor-placeholder)}
+.week-compare strong{font-size:13px;font-weight:600;color:var(--cor-titulo)}
+.week-compare .week-bar{margin-top:3px}
+.progress-link{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;margin-top:auto;padding-top:12px;border-top:1px solid var(--cor-borda);font-size:13px;font-weight:600;color:var(--cor-titulo);text-decoration:none}
+.progress-link .ui-icon{flex-shrink:0;width:17px;height:17px}
+.progress-link:hover{color:var(--cor-primaria)}
+.progress-empty{margin:0 0 14px}
+.progress-empty strong{display:block;font-family:var(--fonte-titulo);font-size:18px;line-height:1.3;color:var(--cor-titulo)}
+.progress-empty p{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--cor-placeholder)}
+
+/* Society: a única superfície preta com linha dourada, pra Home ter um lugar de pertencimento. */
+.card.society-home{position:relative;margin:0 0 12px;padding:24px 22px;border:1px solid var(--gs-charcoal);border-top:2px solid var(--gs-gold);border-radius:20px;background:var(--gs-black);color:var(--gs-off-white);overflow:hidden}
+.society-home-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.society-home-label{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gs-grey-marca)}
+.society-home-symbol{display:grid;place-items:center;width:38px;height:38px;border:1px solid var(--gs-charcoal);border-radius:50%;color:var(--gs-gold)}
+.society-home-symbol .ui-icon{width:20px;height:20px}
+.card.society-home h2{margin:0 0 8px;font-size:clamp(30px,8vw,40px);font-weight:800;line-height:1.05;letter-spacing:-.04em;color:var(--gs-off-white)}
+.society-home-lead{margin:0 0 8px;font-size:16px;font-weight:600;line-height:1.4;color:var(--gs-gold)}
+.society-home-description{margin:0;max-width:52ch;font-size:14px;line-height:1.6;color:var(--gs-grey-marca)}
+.society-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.society-chip{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:6px 12px;border:1px solid var(--gs-charcoal);border-radius:999px;font-size:12px;font-weight:500;color:var(--gs-off-white);text-decoration:none}
+.society-chip .ui-icon{width:15px;height:15px;color:var(--gs-gold)}
+.society-home .society-home-cta{display:flex;justify-content:space-between;gap:16px;width:100%;min-height:52px;margin-top:18px;padding:13px 18px;border-radius:var(--raio-bloco);font-size:15px}
+.society-home-signature{margin:14px 0 0;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gs-grey-marca)}
+
+/* Grinder Ranks: progressão individual, separada do ranking da Society. */
+.rank-emblem svg{display:block}
+.rank-emblem path{fill:var(--cor-bloco);stroke:var(--cor-primaria);stroke-width:1.5;stroke-linejoin:round}
+.rank-emblem text{font-family:var(--fonte-titulo);font-size:15px;font-weight:700;fill:var(--cor-titulo)}
+.home-rank-main{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px}
+.home-rank .rank-emblem,.home-rank .rank-emblem svg{width:42px;height:49px}
+.home-rank-main>div{display:grid;gap:2px;min-width:0}
+.home-rank-main>div>strong{font-family:var(--fonte-titulo);font-size:18px;font-weight:700;line-height:1.2;letter-spacing:-.02em;color:var(--cor-titulo)}
+.home-rank-main small{font-size:12px;line-height:1.35;color:var(--cor-placeholder)}
+.home-rank-points{display:grid;justify-items:end;line-height:1.1}
+.home-rank-points strong{font-family:var(--fonte-titulo);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--cor-titulo)}
+.home-rank-track{list-style:none;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:3px;margin:16px 0 10px;padding:0}
+.home-rank-track li{height:5px;border-radius:2px;background:var(--cor-trilha);overflow:hidden}
+.home-rank-track li.is-earned{background:var(--cor-progresso)}
+.home-rank-track li>i{display:block;height:100%;background:var(--cor-progresso)}
+.home-rank-next{margin:0;font-size:13px;line-height:1.5;color:var(--cor-texto)}
+.home-rank-note{display:block;margin:4px 0 12px;font-size:12px;line-height:1.5;color:var(--cor-placeholder)}
+
+/* Onboarding. */
+.home-journey{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0;padding:0}
+.home-journey li{position:relative;display:grid;justify-items:center;gap:8px;text-align:center;font-size:12px;color:var(--cor-placeholder)}
+.home-journey li+li::before{content:'';position:absolute;top:15px;right:calc(50% + 20px);width:calc(100% - 40px);height:2px;background:var(--cor-borda)}
+.home-journey li.is-done+li::before{background:var(--cor-progresso)}
+.home-journey li>span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--cor-bloco);font-size:13px;font-weight:600}
+.home-journey li>span .ui-icon{width:15px;height:15px}
+.home-journey strong{font-weight:500;line-height:1.3}
+.home-journey .is-done>span{background:var(--cor-destaque);color:var(--cor-sobre-destaque)}
+.home-journey .is-current>span{background:transparent;box-shadow:inset 0 0 0 2px var(--cor-progresso);color:var(--cor-titulo)}
+.home-journey .is-current strong{font-weight:600;color:var(--cor-titulo)}
+.home-unlocked-list{display:grid;gap:8px}
+.home-unlocked-list a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;min-height:60px;padding:10px 14px 10px 12px;border:1px solid var(--cor-borda);border-radius:var(--raio-cartao);background:var(--cor-fundo);color:var(--cor-titulo);text-decoration:none}
+.home-unlocked-list a>.ui-icon{width:17px;height:17px;color:var(--cor-placeholder)}
+
+/* Como usar o app: fechado, em uma linha, sem tomar a frente da Home. */
+[data-screen=hoje] .card.start-guide{padding:0}
+.start-guide>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:10px 18px;cursor:pointer;font-size:14px;font-weight:600;list-style:none}
+.start-guide>summary::-webkit-details-marker{display:none}
+.start-guide>summary::after{content:'';flex-shrink:0;width:8px;height:8px;margin-right:2px;border-right:1.5px solid var(--cor-placeholder);border-bottom:1.5px solid var(--cor-placeholder);transform:rotate(45deg)}
+.start-guide>summary>span:first-child{margin-right:auto}
+.start-guide[open]>summary::after{transform:rotate(-135deg)}
+.start-guide>ol{margin:0;padding:2px 18px 12px 36px;display:grid;gap:6px}
+.start-guide>.button{margin:0 18px 18px;min-height:44px}
+
+/* Carregamento: só aparece se a espera passar de um instante. */
+.home-skeleton{display:grid;gap:12px;animation:home-skeleton-in .2s .18s both}
+.home-skeleton>span{display:block;height:120px;border-radius:var(--raio-cartao);background:var(--cor-fundo);animation:home-skeleton-pulse 1.4s ease-in-out infinite}
+.home-skeleton>.is-hero{height:236px;border-radius:20px}
+.home-skeleton>.is-short{height:68px}
+@keyframes home-skeleton-in{from{opacity:0}to{opacity:1}}
+@keyframes home-skeleton-pulse{50%{opacity:.55}}
+
+/* Toque: resposta visual em tudo que é atalho. */
+.home-quick-tile,.home-unlocked-list a,.home-day-meals a,.society-chip,.progress-link{transition:background-color .16s,border-color .16s,transform .16s var(--motion-ease,ease-out)}
+.home-quick-tile:active,.home-unlocked-list a:active,.society-chip:active{transform:scale(.98)}
+.home-quick-tile:hover,.home-unlocked-list a:hover{border-color:var(--cor-primaria)}
+
+/* Navegação inferior: barra preta nos dois temas, Registrar como ação principal. */
+@media(max-width:700px){
+ [data-role=cliente] .client-shell{padding-bottom:calc(var(--nav-altura) + 28px + env(safe-area-inset-bottom))}
+ [data-role=cliente] .floating-nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:0;left:0;right:0;bottom:0;transform:none;width:100%;max-width:none;min-height:var(--nav-altura);padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:var(--gs-black);border:0;border-top:1px solid var(--gs-charcoal);border-radius:0;box-shadow:none;z-index:15}
+ [data-role=cliente] .floating-nav a,[data-role=cliente] .floating-nav a[aria-current=page]{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:52px;padding:4px 0 2px;border-radius:0;background:transparent;color:var(--gs-grey-marca);font-size:10px;font-weight:500;line-height:1.2;text-decoration:none;white-space:nowrap}
+ [data-role=cliente] .floating-nav a[aria-current=page]{color:var(--gs-gold);font-weight:600}
+ [data-role=cliente] .floating-nav a[aria-current=page]:not(.nav-registrar)::before{content:'';position:absolute;top:-6px;left:50%;width:22px;height:2px;margin-left:-11px;border-radius:0 0 2px 2px;background:var(--gs-gold)}
+ [data-role=cliente] .floating-nav .nav-glyph{display:grid;place-items:center;width:26px;height:26px;transition:transform .16s var(--motion-ease,ease-out)}
+ [data-role=cliente] .floating-nav .ui-icon{width:21px;height:21px}
+ [data-role=cliente] .floating-nav a:active .nav-glyph{transform:scale(.88)}
+ [data-role=cliente] .floating-nav a:hover{transform:none}
+ [data-role=cliente] .floating-nav a:active{transform:none}
+ [data-role=cliente] .floating-nav .nav-registrar .nav-glyph{width:38px;height:30px;border-radius:10px;background:var(--gs-gold);color:var(--gs-black)}
+ [data-role=cliente] .floating-nav .nav-registrar{color:var(--gs-off-white)}
+ [data-role=cliente] .floating-nav .nav-registrar[aria-current=page]{color:var(--gs-gold)}
+ [data-role=cliente] .floating-nav .nav-registrar .ui-icon{width:20px;height:20px;stroke-width:2.2}
+ [data-role=cliente] .floating-nav a.has-dot::after{content:'';position:absolute;top:4px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:var(--gs-gold);box-shadow:0 0 0 2px var(--gs-black)}
+ [data-role=cliente] .toast{bottom:calc(var(--nav-altura) + 12px + env(safe-area-inset-bottom))}
+ [data-role=cliente] #open-menu{display:grid;place-items:center;padding:0}
+ [data-role=cliente] #open-menu .ui-icon{width:20px;height:20px}
+}
+
+/* Telas maiores: mesma hierarquia, com mais ar. */
+@media(min-width:620px){
+ .home-quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .home-quick-tile{flex-direction:column;align-items:flex-start;padding:14px}
+ .home-progress-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ [data-screen=hoje] .next-step-card{padding:26px}
+ [data-screen=hoje] .next-step-card .next-step-button,.society-home .society-home-cta{width:auto;min-width:280px;justify-self:start}
+ .society-home .society-home-cta{display:inline-flex}
+ .card.society-home{padding:28px}
+ .home-unlocked-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(min-width:1000px){
+ [data-role=cliente] .client-shell .app-columns{justify-content:center}
+ [data-screen=hoje] .client-shell .page-heading{max-width:800px;margin-left:auto;margin-right:auto}
+}
+@media(max-width:360px){
+ .consistency-dot{width:28px;height:28px}
+ .home-quick-tile{padding:10px;gap:8px}
+ .home-quick-icon{width:32px;height:32px}
+}
+@media(prefers-reduced-motion:reduce){
+ .home-ring .home-ring-value,.home-skeleton,.home-skeleton>span{animation:none}
+ .home-quick-tile:active,.home-unlocked-list a:active,.society-chip:active,[data-role=cliente] .floating-nav a:active .nav-glyph{transform:none}
+}
+@media print{.home-quick,.home-unlocked,.home-progress-grid,.society-home,.home-rank,.home-day{display:none!important}}
+
+/* Menu lateral: os itens ficam com a própria altura em tela alta, e o logo cabe na coluna de 200 px. */
+@media(min-width:701px){.sidebar nav{align-content:start}}
+@media(min-width:701px) and (max-width:1100px){.sidebar-brand .grinders-brand{gap:8px}.sidebar-brand .grinders-symbol{width:30px;height:30px}.sidebar-brand .grinders-horizontal{width:124px;height:32px}}

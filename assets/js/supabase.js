@@ -6,8 +6,8 @@ import {readCache} from './leituras.js';
 // O aplicativo usa somente contas autenticadas; sessões antigas de demonstração são ignoradas.
 export const isDemo=()=>false;
 export const configured=()=>Boolean(config.url&&config.anonKey);
-let client;
-export async function supabase(){if(!client){if(!configured())throw Error('O serviço está indisponível. Entre em contato com o responsável.');const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm');client=createClient(config.url,config.anonKey,{global:{fetch:(url,options={})=>{const headers=new Headers(options.headers);let view=location.pathname.startsWith('/admin/')?'admin':location.pathname.startsWith('/app/')?'cliente':sessionStorage.getItem('grinders-dev-view')||'cliente';headers.set('x-grinders-view',view);return fetch(url,{...options,headers});}}});}return client;}
+let client,clientReady;
+export async function supabase(){if(client)return client;if(clientReady)return clientReady;clientReady=(async()=>{if(!configured())throw Error('O serviço está indisponível. Entre em contato com o responsável.');const {createClient}=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/+esm');client=createClient(config.url,config.anonKey,{global:{fetch:(url,options={})=>{const headers=new Headers(options.headers);let view=location.pathname.startsWith('/admin/')?'admin':location.pathname.startsWith('/app/')?'cliente':sessionStorage.getItem('grinders-dev-view')||'cliente';headers.set('x-grinders-view',view);return fetch(url,{...options,headers});}}});return client;})();try{return await clientReady;}catch(error){clientReady=null;throw error;}}
 function unwrap({data,error}){if(error)throw Error(error.message);return data;}
 // O app guarda perfil e cadastro neste aparelho pra desenhar a tela sem esperar rede nem carregar o Supabase.
 // É só pra interface: quem protege os dados é o RLS, e a conferência roda em segundo plano. A visão de desenvolvimento depende da área, por isso o perfil é por área.
